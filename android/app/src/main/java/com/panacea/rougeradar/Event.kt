@@ -27,3 +27,4 @@ object SampleEvents {
         Event(6,"Slow mornings on the levee","Outdoors","Downtown riverfront",7,"8:00 AM",0,listOf("Riverside walk","Bird spotting","All paces welcome"),"A gentle walk along the Mississippi. Bring water and comfortable shoes. Weather dependent.",58,15,10,"↟",1.2,30.446,-91.192)
     )
 }
+
