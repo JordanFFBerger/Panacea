@@ -3,7 +3,7 @@ package com.panacea.rougeradar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RectangleShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -57,4 +57,5 @@ fun RiverHero() {
         }
     }
 }
+
 

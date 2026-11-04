@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RectangleShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,7 +50,7 @@ fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)-
         if(filtered.isEmpty()) item { Column(Modifier.padding(vertical=24.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("A little quiet here.",style=MaterialTheme.typography.titleLarge)
             Text(if(tab=="Saved") "Save an event from Discover to find it here." else if(tab=="Profile") "Demo signups appear here. No real reservation is made." else "Try another search or filter.")
-            OutlinedButton(shape=androidx.compose.foundation.shape.RectangleShape,onClick={query="";category="All";price="Any price";period="Any date"}) { Text("Reset filters") }
+            OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={query="";category="All";price="Any price";period="Any date"}) { Text("Reset filters") }
         } }
         items(filtered,key={it.id}) { e -> EventCard(e,e.id.toString() in saved,e.id.toString() in joined,tab=="Nearby",{onOpen(e.id)},{onSave(e.id)}) }
         item { Text("Prototype only · fictional events, prices and signup counts. No tickets or payments.",style=MaterialTheme.typography.bodySmall) }
@@ -61,7 +61,7 @@ fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)-
 fun FilterMenu(value:String,options:List<String>,modifier:Modifier=Modifier,onChange:(String)->Unit) {
     var expanded by remember { mutableStateOf(false) }
     Box(modifier) {
-        OutlinedButton(shape=androidx.compose.foundation.shape.RectangleShape,onClick={expanded=true},modifier=Modifier.fillMaxWidth(),contentPadding=PaddingValues(horizontal=6.dp)) { Text("$value ▾",style=MaterialTheme.typography.labelSmall) }
+        OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={expanded=true},modifier=Modifier.fillMaxWidth(),contentPadding=PaddingValues(horizontal=6.dp)) { Text("$value ▾",style=MaterialTheme.typography.labelSmall) }
         DropdownMenu(expanded=expanded,onDismissRequest={expanded=false}) { options.forEach { option -> DropdownMenuItem(text={Text(option)},onClick={onChange(option);expanded=false}) } }
     }
 }
@@ -71,7 +71,7 @@ fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Uni
     OutlinedCard(modifier=Modifier.fillMaxWidth().clickable(onClick=onOpen),shape=RectangleShape) {
         Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondaryContainer).padding(start=18.dp,end=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
             Text("${e.symbol}  ${e.category.uppercase()}",style=MaterialTheme.typography.labelMedium)
-            TextButton(shape=androidx.compose.foundation.shape.RectangleShape,onClick=onSave) { Text(if(saved) "♥ Unsave" else "♡ Save") }
+            TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave) { Text(if(saved) "♥ Unsave" else "♡ Save") }
         }
         Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
@@ -87,4 +87,5 @@ fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Uni
         }
     }
 }
+
 

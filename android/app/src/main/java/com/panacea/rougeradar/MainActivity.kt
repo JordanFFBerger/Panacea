@@ -40,10 +40,10 @@ fun RadarApp() {
         BackHandler(selected!=-1) { selected=-1 }
         Scaffold(topBar={ Surface { Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal=16.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
             Text("↗ rouge radar",style=MaterialTheme.typography.titleLarge)
-            TextButton(shape=androidx.compose.foundation.shape.RectangleShape,onClick={mode=when(mode){"Auto"->"Day";"Day"->"Night";else->"Auto"};prefs.edit().putString("theme",mode).apply()}) { Text("◐ $mode") }
+            TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={mode=when(mode){"Auto"->"Day";"Day"->"Night";else->"Auto"};prefs.edit().putString("theme",mode).apply()}) { Text("◐ $mode") }
         } } },bottomBar={ Surface(tonalElevation=3.dp) { Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(4.dp)) {
             listOf("Discover","Nearby","Saved","Profile").forEach { name ->
-                TextButton(shape=androidx.compose.foundation.shape.RectangleShape,onClick={tab=name;selected=-1},modifier=Modifier.weight(1f)) {
+                TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={tab=name;selected=-1},modifier=Modifier.weight(1f)) {
                     Column(horizontalAlignment=Alignment.CenterHorizontally) {
                         Text(when(name){"Discover"->"⌂";"Nearby"->"◎";"Saved"->"♡";else->"☷"},style=MaterialTheme.typography.titleLarge)
                         Text(name,style=MaterialTheme.typography.labelSmall)
@@ -59,4 +59,5 @@ fun RadarApp() {
         }
     }
 }
+
 
