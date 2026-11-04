@@ -31,7 +31,7 @@ fun RadarTheme(mode: String, content: @Composable () -> Unit) {
     }
     val dark = mode == "Night" || mode == "Auto" && (hour < 7 || hour >= 18)
     MaterialTheme(colorScheme=if(dark) Night else Day,
-        shapes=Shapes(extraSmall=RectangleShape,small=RectangleShape,medium=RectangleShape,large=RectangleShape,extraLarge=RectangleShape),
+        shapes=Shapes(extraSmall=androidx.compose.foundation.shape.RoundedCornerShape(0.dp),small=androidx.compose.foundation.shape.RoundedCornerShape(0.dp),medium=androidx.compose.foundation.shape.RoundedCornerShape(0.dp),large=androidx.compose.foundation.shape.RoundedCornerShape(0.dp),extraLarge=androidx.compose.foundation.shape.RoundedCornerShape(0.dp)),
         content=content)
 }
 
@@ -57,5 +57,6 @@ fun RiverHero() {
         }
     }
 }
+
 
 
