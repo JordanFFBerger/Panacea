@@ -135,7 +135,13 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, HOST, () => {
-  console.log(`Panacea API running at http://${HOST}:${PORT}`);
-  console.log(`Loaded ${events.length} events`);
-});
+
+if (require.main === module) {
+  server.listen(PORT, HOST, () => {
+    console.log(`Panacea API running at http://${HOST}:${PORT}`);
+    console.log(`Loaded ${events.length} events`);
+  });
+}
+
+module.exports = { server };
+
