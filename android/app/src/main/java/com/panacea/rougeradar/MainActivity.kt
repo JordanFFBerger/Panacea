@@ -30,6 +30,31 @@ fun RadarApp() {
     var joined by remember { mutableStateOf(prefs.getStringSet("joined",emptySet())!!.toSet()) }
     var tab by rememberSaveable { mutableStateOf("Discover") }
     var selected by rememberSaveable { mutableIntStateOf(-1) }
+
+    LaunchedEffect(Unit) {
+        try {
+            val remoteEvents = EventApiClient.fetchEvents()
+
+            android.util.Log.i(
+                "PanaceaAPI",
+                "Successfully loaded ${remoteEvents.size} events from backend"
+            )
+
+            remoteEvents.firstOrNull()?.let { event ->
+                android.util.Log.i(
+                    "PanaceaAPI",
+                    "First event: ${event.title}"
+                )
+            }
+
+        } catch (error: Exception) {
+            android.util.Log.e(
+                "PanaceaAPI",
+                "Failed to load events",
+                error
+            )
+        }
+    }
     fun toggle(id:Int,signup:Boolean) {
         val set=if(signup) joined else saved
         val updated=if(id.toString() in set) set-id.toString() else set+id.toString()
