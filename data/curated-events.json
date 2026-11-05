@@ -1,0 +1,449 @@
+{
+  "version": 1,
+  "events": [
+    {
+      "id": "weekend-kick-off-2026-11-05",
+      "title": "Weekend Kick Off at Chelsea’s Live",
+      "category": "Other",
+      "start_local": "2026-11-05T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "doors",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/event-details/weekend-kick-off-at-chelseas-live"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "federales-fest-2026",
+      "title": "Federales Fest 2026",
+      "category": "Music",
+      "start_local": "2026-11-06T15:00:00-06:00",
+      "end_local": "2026-11-06T23:00:00-06:00",
+      "timezone": "America/Chicago",
+      "time_type": "event",
+      "venue": "Live Oak at Cedar Lodge",
+      "address": "6300 Jefferson Hwy, Baton Rouge, LA 70806",
+      "description": "Country, rock and Americana festival with live music and food. General admission is $55; children 15 and under $10; VIP $225.",
+      "price_min_usd": 10,
+      "ticket_url": "https://bontempstix.com/events/federales-fest-2026-presented-by-williamson-eye-center-lamar-11-6-2026",
+      "age_restriction": null,
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.federalesfest.com/",
+        "https://bontempstix.com/events/federales-fest-2026-presented-by-williamson-eye-center-lamar-11-6-2026"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "bingo-loco-early-2026-11-06",
+      "title": "Bingo Loco at Chelsea’s Live — early show",
+      "category": "Gaming",
+      "start_local": "2026-11-06T17:00:00-06:00",
+      "end_local": "2026-11-06T19:30:00-06:00",
+      "timezone": "America/Chicago",
+      "time_type": "performance",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": "Early show: doors 4:00 p.m.; show 5:00–7:30 p.m.",
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/event-details/bingo-loco-at-chelseas-live-6"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "mariachi-heritage-2026",
+      "title": "Mariachi Herencia de Mexico: Día de Muertos",
+      "category": "Music",
+      "start_local": "2026-11-06T19:30:00-06:00",
+      "end_local": "2026-11-06T21:00:00-06:00",
+      "timezone": "America/Chicago",
+      "time_type": "performance",
+      "venue": "Manship Theatre",
+      "address": "100 Lafayette Street, Baton Rouge, LA 70801",
+      "description": "Evening mariachi performance celebrating Día de los Muertos. Tickets start at $20.",
+      "price_min_usd": 20,
+      "ticket_url": "https://manshiptheatre.org/comingsoon/mariachi",
+      "age_restriction": null,
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://manshiptheatre.org/comingsoon/mariachi"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "bingo-loco-late-2026-11-06",
+      "title": "Bingo Loco at Chelsea’s Live — late show",
+      "category": "Gaming",
+      "start_local": "2026-11-06T21:00:00-06:00",
+      "end_local": "2026-11-06T23:30:00-06:00",
+      "timezone": "America/Chicago",
+      "time_type": "performance",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": "Late show: doors 8:00 p.m.; show 9:00–11:30 p.m.",
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/event-details/bingo-loco-at-chelseas-live-6"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "baton-rouge-latin-nights-2026-11-07",
+      "title": "Baton Rouge Latin Nights at Chelsea’s Live",
+      "category": "Music",
+      "start_local": "2026-11-07T21:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "doors",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": "Doors at 9:00 p.m.; free salsa lessons at 10:00 p.m. Admission is $10 advance or $15 at the box office.",
+      "price_min_usd": 10,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/event-details/baton-rouge-latin-nights-at-chelseas-live-26"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "paula-cole-2026-11-09",
+      "title": "Paula Cole This Fire: 30 Tour with Rett Madison",
+      "category": "Music",
+      "start_local": "2026-11-09T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "drivin-n-cryin-2026-11-10",
+      "title": "Drivin N’ Cryin with The Alabama Heathens",
+      "category": "Music",
+      "start_local": "2026-11-10T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "madball-2026-11-11",
+      "title": "Madball with Rotting Out, Muscle and Hole Opener",
+      "category": "Music",
+      "start_local": "2026-11-11T18:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "cigarettes-at-sunset-2026-11-12",
+      "title": "Cigarettes @ Sunset with Yesterday’s Clothes",
+      "category": "Music",
+      "start_local": "2026-11-12T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "alok-2026-11-17",
+      "title": "ALOK at Chelsea’s Live",
+      "category": "Other",
+      "start_local": "2026-11-17T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "zoso-2026-11-19",
+      "title": "Zoso The Ultimate Led Zeppelin",
+      "category": "Music",
+      "start_local": "2026-11-19T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "white-light-night-2026",
+      "title": "White Light Night",
+      "category": "Arts",
+      "start_local": "2026-11-20T18:00:00-06:00",
+      "end_local": "2026-11-20T22:00:00-06:00",
+      "timezone": "America/Chicago",
+      "time_type": "event",
+      "venue": "Mid City",
+      "address": null,
+      "description": "Free neighborhood art festival with local artists, shopping, music and food. Consult the organizer’s map for participating locations.",
+      "price_min_usd": 0,
+      "ticket_url": null,
+      "age_restriction": null,
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://midcitymerchantsbr.org/events/wln"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "st-george-food-truck-fest-2026",
+      "title": "St. George Food Truck Fest",
+      "category": "Food",
+      "start_local": "2026-11-21T11:00:00-06:00",
+      "end_local": "2026-11-21T18:00:00-06:00",
+      "timezone": "America/Chicago",
+      "time_type": "event",
+      "venue": "BREC State Fairgrounds",
+      "address": "16072 Airline Hwy, St. George, LA",
+      "description": "Free food truck festival with live music, vendors and family activities.",
+      "price_min_usd": 0,
+      "ticket_url": null,
+      "age_restriction": null,
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://sgfoodtruckfest.com/",
+        "https://geauxbatonrouge.la/st-george-food-truck-fest/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "last-waltz-2026-11-25",
+      "title": "The Band, The Last Waltz 3 Tribute Show",
+      "category": "Music",
+      "start_local": "2026-11-25T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "futurebirds-2026-12-02",
+      "title": "Futurebirds Far Out Country Tour with Arts Fishing Club",
+      "category": "Music",
+      "start_local": "2026-12-02T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "doors",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": "Doors at 7:00 p.m.; show at 8:00 p.m., per TicketWeb.",
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/",
+        "https://www.ticketweb.com/event/futurebirds-far-out-country-chelseas-live-tickets/15046503"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "why-2026-12-15",
+      "title": "WHY? with Mol Sullivan",
+      "category": "Music",
+      "start_local": "2026-12-15T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "hitchhiker-2026-12-18",
+      "title": "The Hitchhiker with Morningside Drive and Judge Genius",
+      "category": "Music",
+      "start_local": "2026-12-18T20:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "colour-revolt-2027-01-16",
+      "title": "Colour Revolt, As Cities Burn and Baby in the 90’s",
+      "category": "Music",
+      "start_local": "2027-01-16T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "wolves-in-the-throne-room-2027-01-31",
+      "title": "Wolves In The Throne Room, Stygian Bough and Spirit Possession",
+      "category": "Music",
+      "start_local": "2027-01-31T18:30:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    },
+    {
+      "id": "liam-st-john-2027-02-01",
+      "title": "Liam St. John",
+      "category": "Music",
+      "start_local": "2027-02-01T19:00:00-06:00",
+      "end_local": null,
+      "timezone": "America/Chicago",
+      "time_type": "listed_time",
+      "venue": "Chelsea’s Live",
+      "address": "1010 Nicholson Dr, Baton Rouge, LA",
+      "description": null,
+      "price_min_usd": null,
+      "ticket_url": null,
+      "age_restriction": "18+",
+      "latitude": null,
+      "longitude": null,
+      "source_urls": [
+        "https://www.chelseaslive.com/"
+      ],
+      "checked_date": "2026-11-05"
+    }
+  ]
+}
