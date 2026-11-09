@@ -178,3 +178,68 @@ test("rejects invalid event timestamps", () => {
     /Invalid start date/
   );
 });
+
+test("combines case-insensitive category, search and date filters", async () => {
+  const params = new URLSearchParams({ category: " mUsIc ", q: "  mArIaChI ", date: "2026-11-06" });
+  const response = await fetch(`${baseUrl}/api/events?${params}`);
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.count, 1);
+  assert.deepEqual(result.events.map(e => e.id), ["mariachi-heritage-2026"]);
+});
+
+test("filters evening events by Baton Rouge calendar date, not UTC date", async () => {
+  const response = await fetch(`${baseUrl}/api/events?date=2026-11-05`);
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.ok(result.events.some(e => e.id === "weekend-kick-off-2026-11-05"));
+  assert.ok(result.events.every(e => e.startLocal.startsWith("2026-11-05T")));
+});
+
+test("returns an empty result for a valid search with no matches", async () => {
+  const response = await fetch(`${baseUrl}/api/events?q=nonexistent-rouge-radar-test-event`);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { count: 0, events: [] });
+});
+
+test("rejects impossible dates that JavaScript would roll into the next month", async () => {
+  const response = await fetch(`${baseUrl}/api/events?date=2026-02-29`);
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /Invalid date/);
+});
+
+test("reports malformed percent-encoded IDs as bad requests", async () => {
+  const response = await fetch(`${baseUrl}/api/events/%ZZ`);
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "Invalid event ID" });
+});
+
+test("does not accept an encoded slash inside an event ID", async () => {
+  const response = await fetch(`${baseUrl}/api/events/part%2Fother`);
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { error: "Event not found" });
+});
+
+test("preserves zero as an explicit free price in the API", async () => {
+  const response = await fetch(`${baseUrl}/api/events/white-light-night-2026`);
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).event.priceMinUsd, 0);
+});
+
+test("rejects an impossible calendar date in an event timestamp", () => {
+  testInvalidData(events => {
+    events[0].start_local = "2026-02-29T19:00:00-06:00";
+  }, /Invalid start date/);
+});
+
+test("rejects an event ending before it starts even with different offsets", () => {
+  testInvalidData(events => {
+    events[0].end_local = "2026-11-05T23:00:00Z";
+  }, /End date precedes start date/);
+});
+
+test("rejects records without any source URLs", () => {
+  testInvalidData(events => {
+    events[0].source_urls = [];
+  }, /Missing sources/);
+});

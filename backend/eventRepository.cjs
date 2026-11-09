@@ -44,10 +44,16 @@ function loadEvents(filePath = DATA_FILE) {
     }
     ids.add(event.id);
 
-    const validDate = (value) =>
-      typeof value === "string" &&
-      /(?:Z|[+-]\d{2}:\d{2})$/.test(value) &&
-      !Number.isNaN(Date.parse(value));
+    const validDate = (value) => {
+      if (typeof value !== "string" ||
+          !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/.test(value) ||
+          !Number.isFinite(Date.parse(value))) return false;
+
+      const calendarDay = value.slice(0, 10);
+      const midnight = new Date(calendarDay + "T00:00:00Z");
+      return Number.isFinite(midnight.getTime()) &&
+        midnight.toISOString().slice(0, 10) === calendarDay;
+    };
 
     if (!validDate(event.start_local)) {
       throw new Error(`Invalid start date: ${event.id}`);
@@ -66,7 +72,11 @@ function loadEvents(filePath = DATA_FILE) {
       throw new Error(`Invalid price: ${event.id}`);
     }
 
-    if (!Array.isArray(event.source_urls)) {
+    if (event.end_local != null && Date.parse(event.end_local) < Date.parse(event.start_local)) {
+      throw new Error(`End date precedes start date: ${event.id}`);
+    }
+
+    if (!Array.isArray(event.source_urls) || event.source_urls.length === 0) {
       throw new Error(`Missing sources: ${event.id}`);
     }
 
