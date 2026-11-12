@@ -72,7 +72,7 @@ fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Uni
     OutlinedCard(modifier=Modifier.fillMaxWidth().clickable(onClick=onOpen),shape=RectangleShape) {
         EventCover(e, Modifier.fillMaxWidth().height(148.dp))
         Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondaryContainer).padding(start=18.dp,end=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-            Text("✦  Boredom remedy",style=MaterialTheme.typography.labelMedium)
+            Text(if(e.track != null) "♫  In-app listening room" else "✦  Boredom remedy",style=MaterialTheme.typography.labelMedium)
             TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave) { Text(if(saved) "♥ Unsave" else "♡ Save") }
         }
         Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {

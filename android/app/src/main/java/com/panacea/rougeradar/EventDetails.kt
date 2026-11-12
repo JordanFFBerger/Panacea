@@ -23,6 +23,7 @@ fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()-
         Text("${e.dateLabel} · ${e.time}")
         Text("◎ ${e.venue}")
         Text(e.description)
+        e.track?.let { EventListeningRoom(it) }
         HorizontalDivider()
         Text("What's included",style=MaterialTheme.typography.titleMedium)
         e.activities.forEach { Text("✓ $it") }

@@ -29,3 +29,5 @@ Replace `SampleEvents` with an event repository/API and normalized price/activit
 The repository root's `app/` directory contains the earlier browser design reference. The Android application lives entirely here.
 
 The Discover hero features Panacea’s historical woodcut and a **Pick a cure for me** button that chooses an event from the current filters. Event cards and details display human-made, offline cover photos. See the [photo credits and license links](PHOTO-CREDITS.md).
+
+Music details offer an opt-in Listening Room. The demo jazz event features [Take Five by The Dave Brubeck Quartet](https://www.youtube.com/watch?v=-DHuW1h1wHw) as a mood match, with the official YouTube embed and a watch link. Playback needs internet access and is subject to YouTube availability. No media is downloaded or bundled.
