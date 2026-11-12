@@ -32,4 +32,4 @@ The Discover hero features a cropped portrait of the draped Panakeia statue at t
 
 Music details offer an offline Listening Room. The fictional jazz event features [On the Cool Side](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100124) by Kevin MacLeod (incompetech.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The original MP3 is bundled unchanged.
 
-Discover uses a credited Baton Rouge photograph for each color theme. **Meet Panacea** displays a verbatim excerpt from the [Science Museum Group](https://collection.sciencemuseumgroup.org.uk/people/cp117496/panacea) beside the app tagline. Add your own boredom connection in the optional `panacea_boredom_note` string in `app/src/main/res/values/strings.xml`.
+Discover uses a credited Baton Rouge photograph for each color theme. **Meet Panacea** displays a verbatim excerpt from the [Theoi Project](https://www.theoi.com/Ouranios/AsklepiasPanakeia.html) followed by the app's boredom line in the `panacea_boredom_note` string in `app/src/main/res/values/strings.xml`.

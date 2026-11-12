@@ -109,15 +109,12 @@ fun RiverHero(onPick: (() -> Unit)?) {
         title = { Text("Panacea") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(stringResource(R.string.panacea_museum_excerpt))
+                Text(stringResource(R.string.panacea_source_excerpt))
+                Text(stringResource(R.string.panacea_boredom_note))
                 TextButton(
-                    onClick = { uriHandler.openUri("https://collection.sciencemuseumgroup.org.uk/people/cp117496/panacea") },
+                    onClick = { uriHandler.openUri("https://www.theoi.com/Ouranios/AsklepiasPanakeia.html") },
                     shape = RectangleShape, contentPadding = PaddingValues(horizontal = 0.dp)
-                ) { Text("Science Museum Group ↗") }
-                HorizontalDivider()
-                Text(stringResource(R.string.app_tagline), style = MaterialTheme.typography.titleMedium)
-                val note = stringResource(R.string.panacea_boredom_note)
-                if (note.isNotBlank()) Text(note)
+                ) { Text("Theoi Project ↗") }
             }
         },
         confirmButton = { TextButton(onClick = { showPanacea = false }, shape = RectangleShape) { Text("Done") } }

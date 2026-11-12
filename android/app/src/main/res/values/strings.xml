@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Panacea</string>
     <string name="app_tagline">Bored? We have the cure!</string>
-    <string name="panacea_museum_excerpt">goddess of universal health; mythological daughter of Asclepius/Aesculapius and Epione and sister of Hygeia.</string>
-    <!-- Add your own boredom connection here. The museum excerpt above stays verbatim. -->
-    <string name="panacea_boredom_note"></string>
+    <string name="panacea_source_excerpt">PANAKEIA (Panacea) was the goddess of cures and panaceas--in the form of medicines, salves and other curatives.</string>
+    <!-- The source excerpt above stays verbatim. The boredom note is app copy. -->
+    <string name="panacea_boredom_note">She has come down from Mount Olympus to cure your insatiable boredom!</string>
 </resources>

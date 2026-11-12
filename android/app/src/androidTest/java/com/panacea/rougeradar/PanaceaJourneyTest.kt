@@ -71,10 +71,11 @@ class PanaceaJourneyTest {
 
     @Test fun meetPanaceaOpensAndDismissesTheAttributedSynopsis() {
         app.onNodeWithText("Meet Panacea").performClick()
-        app.onNodeWithText("goddess of universal health", substring = true).assertIsDisplayed()
-        app.onNodeWithText("Science Museum Group ↗").assertIsDisplayed()
+        app.onNodeWithText("goddess of cures and panaceas", substring = true).assertIsDisplayed()
+        app.onNodeWithText("Theoi Project ↗").assertIsDisplayed()
+        app.onNodeWithText("She has come down from Mount Olympus to cure your insatiable boredom!").assertIsDisplayed()
         app.onNodeWithText("Done").performClick()
-        app.onNodeWithText("Science Museum Group ↗").assertDoesNotExist()
+        app.onNodeWithText("Theoi Project ↗").assertDoesNotExist()
     }
 
     @Test fun listeningRoomPlaysAndPausesTheBundledTrack() {
