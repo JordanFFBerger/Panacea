@@ -24,7 +24,7 @@ APK output: `app/build/outputs/apk/debug/app-debug.apk`. Android Studio supplies
 
 Events, prices, coordinates, distances, dates and signup counts are fictional fixtures. Dates are relative to today in Baton Rouge. Signups are local demonstrations, not reservations; no payments or actual tickets. This skeleton has no server or login. The nearby page is a distance list with external area maps, not a live in-app map.
 
-Replace `SampleEvents` with an event repository/API and normalized price/activities/location fields. Move authenticated, deduplicated signup counts and rolling trending calculations to a backend before real use. Connect verified organizer ticket links, and add a geographic map provider if needed.
+Android loads the backend event catalog and displays its entries alongside labeled demo listings. Move authenticated, deduplicated signup counts and rolling trending calculations to a backend before real use. Connect verified organizer ticket links, and add a geographic map provider if needed.
 
 The repository root's `app/` directory contains the earlier browser design reference. The Android application lives entirely here.
 
@@ -33,3 +33,7 @@ The Discover hero features a cropped portrait of the draped Panakeia statue at t
 Music details offer an offline Listening Room. The fictional jazz event features [On the Cool Side](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100124) by Kevin MacLeod (incompetech.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The original MP3 is bundled unchanged.
 
 Discover uses a credited Baton Rouge photograph for each color theme. **Meet Panacea** displays a verbatim excerpt from the [Theoi Project](https://www.theoi.com/Ouranios/AsklepiasPanakeia.html) followed by the app's boredom line in the `panacea_boredom_note` string in `app/src/main/res/values/strings.xml`.
+
+## Android event catalog
+
+Start the API from the repository root with `node backend/apiServer.cjs`. Emulator debug builds use `http://10.0.2.2:3000`. To connect a physical phone, host the API at a reachable HTTPS address and build with `-PpanaceaApiUrl=https://your-api.example`. A release build needs that setting to load the catalog. Without a reachable API, Android shows the demo listings and an unavailable message.

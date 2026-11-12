@@ -87,6 +87,20 @@ class PanaceaJourneyTest {
         app.onNodeWithText("Pause preview").performScrollTo().performClick()
         app.onNodeWithText("Play preview").assertIsDisplayed()
     }
+    @Test fun fetchedCatalogEventAppearsInDiscoverAndOpensDetails() {
+        app.onNodeWithTag("event-list").performScrollToNode(hasTestTag("event-search"))
+        app.onNodeWithTag("event-search").performTextInput("Mariachi Herencia")
+        app.onNodeWithTag("event-search").performImeAction()
+        app.waitUntil(15_000) {
+            app.onAllNodesWithText("Baton Rouge event catalog and demo listings").fetchSemanticsNodes().isNotEmpty()
+        }
+        app.onNodeWithTag("event-list").performScrollToNode(hasText("Mariachi Herencia", substring = true))
+        app.onNodeWithText("Mariachi Herencia", substring = true).performClick()
+        app.onNodeWithText("From $20.00").performScrollTo().assertIsDisplayed()
+        app.onNodeWithText("Organizer tickets ↗").performScrollTo().assertIsDisplayed()
+        app.onNodeWithText("Count me in · demo signup").assertDoesNotExist()
+    }
+
     @Test fun androidClientReadsRealEventsFromTheRunningBackend() = runBlocking {
         val events = EventApiClient.fetchEvents()
         assertTrue(events.any { it.id == "mariachi-heritage-2026" && it.priceMinUsd == 20.0 })

@@ -22,32 +22,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)->Unit,onSave:(Int)->Unit) {
+fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<String>,joined:Set<String>,onOpen:(String)->Unit,onSave:(String)->Unit) {
     val focusManager = LocalFocusManager.current
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("All") }
     var period by rememberSaveable { mutableStateOf("Any date") }
     var price by rememberSaveable { mutableStateOf("Any price") }
     var sort by rememberSaveable { mutableStateOf("Soonest") }
-    val filtered=SampleEvents.all.filter { e ->
-        (tab!="Saved" || e.id.toString() in saved) && (tab!="Profile" || e.id.toString() in joined) &&
+    val today = java.time.LocalDate.now(java.time.ZoneId.of("America/Chicago"))
+    val filtered=events.filter { e ->
+        (tab!="Saved" || e.key in saved) && (tab!="Profile" || e.key in joined) &&
         (category=="All" || e.category==category) &&
         (query.isBlank() || "${e.title} ${e.venue} ${e.category} ${e.activities.joinToString()}".contains(query,true)) &&
-        (price!="Free" || e.price==0) && (price!="Under $25" || e.price<=25) &&
-        (period!="This week" || e.daysAway<=7) && (period!="Weekend" || e.date.dayOfWeek.value>=6)
-    }.let { list -> when { tab=="Nearby"->list.sortedBy { it.miles };sort=="Trending"->list.sortedByDescending { it.recent };sort=="Price"->list.sortedBy { it.price };else->list.sortedBy { it.daysAway } } }
+        (price!="Free" || e.amount==0.0) && (price!="Under $25" || (e.amount?.let { it < 25.0 } == true)) &&
+        (period!="This week" || e.date in today..today.plusDays(7)) && (period!="Weekend" || e.date.dayOfWeek.value>=6)
+    }.let { list -> when { tab=="Nearby"->list.sortedBy { it.miles ?: Double.POSITIVE_INFINITY };sort=="Trending"->list.sortedByDescending { it.recent };sort=="Price"->list.sortedBy { it.amount ?: Double.POSITIVE_INFINITY };else->list.sortedBy { it.date } } }
     LazyColumn(modifier=Modifier.testTag("event-list"),contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=16.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
-        if(tab=="Discover") item { RiverHero(onPick = if (filtered.isEmpty()) null else ({ onOpen(filtered.random().id) })) }
+        if(tab=="Discover") item { RiverHero(onPick = if (filtered.isEmpty()) null else ({ onOpen(filtered.random().key) })) }
         item { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved for a good day";"Profile"->"Your next good stories";else->"Around the Red Stick"},style=MaterialTheme.typography.headlineSmall)
-            Text(if(tab=="Profile") "Local guest · plans saved on this device" else "Baton Rouge · sample listings",style=MaterialTheme.typography.labelMedium)
-            if(tab=="Nearby") Text("Sorted by sample distance. Open any event for its map link.",style=MaterialTheme.typography.bodySmall)
+            Text(if(tab=="Profile") "Local guest · plans saved on this device" else catalogStatus,style=MaterialTheme.typography.labelMedium)
+            if(tab=="Nearby") Text("Known distances first. Check the event for venue information.",style=MaterialTheme.typography.bodySmall)
         } }
         item { OutlinedTextField(value=query,onValueChange={query=it},label={Text("Search events, activities, places")},singleLine=true,modifier=Modifier.fillMaxWidth().testTag("event-search"),shape=RectangleShape,
             keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search),
             keyboardActions=KeyboardActions(onSearch={focusManager.clearFocus()})) }
         item { Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            listOf("All","Music","Books","Food","Arts","Gaming","Outdoors").forEach { name -> FilterChip(selected=category==name,onClick={category=name},label={Text(name)},shape=RectangleShape) }
+            (listOf("All","Music","Books","Food","Arts","Gaming","Outdoors") + events.map { it.category }).distinct().forEach { name -> FilterChip(selected=category==name,onClick={category=name},label={Text(name)},shape=RectangleShape) }
         } }
         item { Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
             FilterMenu(period,listOf("Any date","This week","Weekend"),Modifier.weight(1f)){period=it}
@@ -55,14 +56,14 @@ fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)-
             FilterMenu(sort,listOf("Soonest","Trending","Price"),Modifier.weight(1f)){sort=it}
         } }
         if (tab == "Profile") item { PhotoCredits() }
-        item { Text("${filtered.size} events · Demo data",style=MaterialTheme.typography.labelSmall) }
+        item { Text("${filtered.size} events",style=MaterialTheme.typography.labelSmall) }
         if(filtered.isEmpty()) item { Column(Modifier.padding(vertical=24.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("A little quiet here.",style=MaterialTheme.typography.titleLarge)
             Text(if(tab=="Saved") "Save an event from Discover to find it here." else if(tab=="Profile") "Demo signups appear here. No real reservation is made." else "Try another search or filter.")
             OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={query="";category="All";price="Any price";period="Any date"}) { Text("Reset filters") }
         } }
-        items(filtered,key={it.id}) { e -> EventCard(e,e.id.toString() in saved,e.id.toString() in joined,tab=="Nearby",{onOpen(e.id)},{onSave(e.id)}) }
-        item { Text("Prototype only · fictional events, prices and signup counts. No tickets or payments.",style=MaterialTheme.typography.bodySmall) }
+        items(filtered,key={it.key}) { e -> EventCard(e,e.key in saved,e.key in joined,tab=="Nearby",{onOpen(e.key)},{onSave(e.key)}) }
+        item { Text("Demo listings are fictional. Check with organizers for catalog event details.",style=MaterialTheme.typography.bodySmall) }
     }
 }
 
@@ -80,7 +81,7 @@ fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Uni
     OutlinedCard(modifier=Modifier.fillMaxWidth().clickable(onClick=onOpen),shape=RectangleShape) {
         EventCover(e, Modifier.fillMaxWidth().height(132.dp))
         Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondaryContainer).padding(start=18.dp,end=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-            Text(if(e.track != null) "♫  In-app listening room" else "✦  Boredom remedy",style=MaterialTheme.typography.labelMedium)
+            Text(if(e.track != null) "♫  In-app listening room" else if(e.isSample) "✦  Demo listing" else "✦  Catalog event",style=MaterialTheme.typography.labelMedium)
             TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave) { Text(if(saved) "♥ Unsave" else "♡ Save") }
         }
         Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
@@ -92,8 +93,8 @@ fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Uni
             Text("${e.time} · ${e.venue}",style=MaterialTheme.typography.bodySmall)
             Text(e.activities.joinToString(" · "),style=MaterialTheme.typography.bodyMedium)
             HorizontalDivider()
-            Text("${if(e.trending) "↗ Trending" else "Gathering good company"} · ${e.signups+if(joined) 1 else 0} signed up",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.primary)
-            if(nearby) Text("${e.miles} mi · Sample distance",style=MaterialTheme.typography.labelSmall)
+            if(e.isSample) Text("${if(e.trending) "↗ Trending" else "Gathering good company"} · ${e.signups+if(joined) 1 else 0} signed up",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.primary)
+            if(nearby && e.miles != null) Text("${e.miles} mi · Sample distance",style=MaterialTheme.typography.labelSmall)
         }
     }
 }

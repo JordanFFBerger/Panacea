@@ -1,5 +1,6 @@
 package com.panacea.rougeradar
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.*
@@ -22,27 +23,48 @@ fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()-
         Text(e.priceLabel,style=MaterialTheme.typography.headlineSmall,color=MaterialTheme.colorScheme.primary)
         Text("${e.dateLabel} · ${e.time}")
         Text("◎ ${e.venue}")
-        Text(e.description)
-        e.track?.let { EventListeningRoom(it) }
-        HorizontalDivider()
-        Text("What's included",style=MaterialTheme.typography.titleMedium)
-        e.activities.forEach { Text("✓ $it") }
-        Surface(color=MaterialTheme.colorScheme.secondaryContainer) { Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
-            Text(if(e.trending) "↗ Trending right now" else "Finding its people",style=MaterialTheme.typography.titleMedium)
-            Text("${e.recent} sample signups in 24h · ${e.signups+if(joined) 1 else 0} total")
-            Text("Trending means 20+ signups in 24 hours and at least 50% growth over the previous 24 hours. Counts are sample data.",style=MaterialTheme.typography.bodySmall)
-        } }
-        Button(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onJoin,modifier=Modifier.fillMaxWidth()) { Text(if(joined) "✓ On the demo list · undo" else "Count me in · demo signup") }
-        OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave,modifier=Modifier.fillMaxWidth()) { Text(if(saved) "♥ Saved · remove" else "♡ Save for later") }
-        OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={
-            context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://www.openstreetmap.org/?mlat=${e.latitude}&mlon=${e.longitude}#map=15/${e.latitude}/${e.longitude}")))
-        },modifier=Modifier.fillMaxWidth()) { Text("Open sample area in Maps ↗") }
+        if (e.description.isNotBlank()) Text(e.description)
+        e.listing?.address?.let { Text(it) }
+        e.listing?.ageRestriction?.let { Text(it) }
+        if (e.isSample) {
+            e.track?.let { EventListeningRoom(it) }
+            HorizontalDivider()
+            Text("What's included",style=MaterialTheme.typography.titleMedium)
+            e.activities.forEach { Text("✓ $it") }
+            Surface(color=MaterialTheme.colorScheme.secondaryContainer) { Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                Text(if(e.trending) "↗ Trending right now" else "Finding its people",style=MaterialTheme.typography.titleMedium)
+                Text("${e.recent} sample signups in 24h · ${e.signups+if(joined) 1 else 0} total")
+                Text("Trending means 20+ signups in 24 hours and at least 50% growth over the previous 24 hours. Counts are sample data.",style=MaterialTheme.typography.bodySmall)
+            } }
+            Button(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onJoin,modifier=Modifier.fillMaxWidth()) { Text(if(joined) "✓ On the demo list · undo" else "Count me in · demo signup") }
+            OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave,modifier=Modifier.fillMaxWidth()) { Text(if(saved) "♥ Saved · remove" else "♡ Save for later") }
+        } else {
+            OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave,modifier=Modifier.fillMaxWidth()) {
+                Text(if(saved) "♥ Saved · remove" else "♡ Save for later")
+            }
+        }
+        val mapUrl = if (e.latitude != null && e.longitude != null)
+            "https://www.openstreetmap.org/?mlat=${e.latitude}&mlon=${e.longitude}#map=15/${e.latitude}/${e.longitude}"
+            else e.listing?.address?.let { "https://www.openstreetmap.org/search?query=${Uri.encode(it)}" }
+        val ticketUrl = e.listing?.ticketUrl?.takeIf { Uri.parse(it).scheme == "https" }
+        if (mapUrl != null) EventLink("Open in Maps ↗", mapUrl)
+        if (ticketUrl != null) EventLink("Organizer tickets ↗", ticketUrl)
         TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={
-            val share=Intent(Intent.ACTION_SEND).apply { type="text/plain";putExtra(Intent.EXTRA_TEXT,"${context.getString(R.string.app_name)} demo: ${e.title}\n${e.dateLabel} ${e.time} · ${e.priceLabel}\n${e.venue}\n${e.activities.joinToString()}\nFictional sample event; no actual reservation.") }
+            val share=Intent(Intent.ACTION_SEND).apply { type="text/plain";putExtra(Intent.EXTRA_TEXT,"${e.title}\n${e.dateLabel} ${e.time} · ${e.priceLabel}\n${e.venue}" + if (e.isSample) "\nFictional sample event; no actual reservation." else "") }
             context.startActivity(Intent.createChooser(share,"Share sample event"))
         }) { Text("Share event summary") }
-        Text("Demo only. No ticket is issued, no payment is collected, and listings are fictional. Optional purchases may cost extra.",style=MaterialTheme.typography.bodySmall)
+        if (e.isSample) Text("Demo only. No ticket is issued, no payment is collected, and listings are fictional. Optional purchases may cost extra.",style=MaterialTheme.typography.bodySmall)
     }
 }
 
-
+@Composable
+private fun EventLink(label: String, url: String) {
+    val context = LocalContext.current
+    OutlinedButton(shape = androidx.compose.ui.graphics.RectangleShape, modifier = Modifier.fillMaxWidth(), onClick = {
+        try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (_: ActivityNotFoundException) {
+            android.widget.Toast.makeText(context, "No browser available", android.widget.Toast.LENGTH_SHORT).show()
+        }
+    }) { Text(label) }
+}

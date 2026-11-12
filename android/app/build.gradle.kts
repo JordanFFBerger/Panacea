@@ -1,6 +1,15 @@
+import java.net.URI
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
+}
+val configuredApiUrl = providers.gradleProperty("panaceaApiUrl").orNull?.trimEnd('/')
+configuredApiUrl?.let {
+    val uri = URI(it)
+    require(uri.scheme == "https" && uri.host != null && uri.userInfo == null && uri.query == null && uri.fragment == null) {
+        "panaceaApiUrl must be an HTTPS base URL"
+    }
 }
 android {
     namespace = "com.panacea.rougeradar"
@@ -13,7 +22,11 @@ android {
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    buildFeatures { compose = true }
+    buildTypes {
+        debug { buildConfigField("String", "EVENT_API_URL", "\"${configuredApiUrl ?: "http://10.0.2.2:3000"}\"") }
+        release { buildConfigField("String", "EVENT_API_URL", "\"${configuredApiUrl.orEmpty()}\"") }
+    }
+    buildFeatures { compose = true; buildConfig = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

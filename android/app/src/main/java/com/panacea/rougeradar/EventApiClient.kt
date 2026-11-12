@@ -11,10 +11,11 @@ import java.time.OffsetDateTime
 
 object EventApiClient {
 
-    private const val BASE_URL = "http://10.0.2.2:3000"
+    private const val BASE_URL = BuildConfig.EVENT_API_URL
 
     suspend fun fetchEvents(): List<RemoteEvent> =
         withContext(Dispatchers.IO) {
+            if (BASE_URL.isBlank()) throw IOException("No event API configured")
 
             val connection = (
                     URL("$BASE_URL/api/events").openConnection()
@@ -88,7 +89,7 @@ object EventApiClient {
             latitude = optionalNumber("latitude"),
             longitude = optionalNumber("longitude"),
             sourceUrls = sourceUrls,
-            checkedDate = item.getString("checkedDate")
+            checkedDate = optionalText("checkedDate")
         )
     }
 }
