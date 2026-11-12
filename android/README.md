@@ -27,3 +27,5 @@ Events, prices, coordinates, distances, dates and signup counts are fictional fi
 Replace `SampleEvents` with an event repository/API and normalized price/activities/location fields. Move authenticated, deduplicated signup counts and rolling trending calculations to a backend before real use. Connect verified organizer ticket links, and add a geographic map provider if needed.
 
 The repository root's `app/` directory contains the earlier browser design reference. The Android application lives entirely here.
+
+The Discover hero features Panacea’s historical woodcut and a **Pick a cure for me** button that chooses an event from the current filters. Event cards and details display human-made, offline cover photos. See the [photo credits and license links](PHOTO-CREDITS.md).

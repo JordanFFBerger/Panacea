@@ -16,7 +16,8 @@ fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()-
     val context=LocalContext.current
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onBack) { Text("← Back to events") }
-        Text("${e.symbol}  ${e.category.uppercase()}",style=MaterialTheme.typography.labelLarge,color=MaterialTheme.colorScheme.primary)
+        EventCover(e, Modifier.fillMaxWidth().height(190.dp))
+        PhotoCredits()
         Text(e.title,style=MaterialTheme.typography.headlineLarge)
         Text(e.priceLabel,style=MaterialTheme.typography.headlineSmall,color=MaterialTheme.colorScheme.primary)
         Text("${e.dateLabel} · ${e.time}")

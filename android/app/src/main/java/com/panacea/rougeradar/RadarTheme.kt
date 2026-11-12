@@ -1,14 +1,18 @@
 package com.panacea.rougeradar
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -36,27 +40,45 @@ fun RadarTheme(mode: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-fun RiverHero() {
+fun RiverHero(onPick: (() -> Unit)?) {
     val dark = MaterialTheme.colorScheme.background == Night.background
     val ink = MaterialTheme.colorScheme.onBackground
-    Box(Modifier.fillMaxWidth().height(218.dp).background(Brush.linearGradient(if(dark) listOf(Color(0xFF172C40),Color(0xFF395565)) else listOf(Color(0xFFD3F3E0),Color(0xFF8AD8DF))))) {
-        Canvas(Modifier.fillMaxSize()) {
-            drawCircle(brush=Brush.radialGradient(listOf(Color(0xFFFFF5CD),Color(0xFFC5DDBB)),center=Offset(size.width*.82f,68.dp.toPx()),radius=50.dp.toPx()),radius=50.dp.toPx(),center=Offset(size.width*.82f,68.dp.toPx()))
-            drawOval(Color(0xFF70BFCB).copy(alpha=.5f),topLeft=Offset(size.width*.20f,size.height*.62f),size=Size(size.width*1.2f,size.height*.8f))
-            drawOval(Color.White.copy(alpha=.35f),topLeft=Offset(size.width*.25f,size.height*.75f),size=Size(size.width*1.3f,size.height*.6f))
-            val left=size.width*.57f
-            listOf(36f,50f,85f,43f,26f).forEachIndexed { i,h ->
-                drawRect(Color(0xFF3C7977),topLeft=Offset(left+i*18.dp.toPx(),size.height-26.dp.toPx()-h.dp.toPx()),size=Size(13.dp.toPx(),h.dp.toPx()))
+    val colors = if (dark) listOf(Color(0xFF14283A), Color(0xFF45324E))
+                 else listOf(Color(0xFFF1FFE2), Color(0xFFA1E2EE), Color(0xFFDAF1C2))
+    Column(
+        Modifier.fillMaxWidth().background(Brush.linearGradient(colors)).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    if (dark) "✦  AFTER HOURS" else "✦  BATON ROUGE, LA",
+                    color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelMedium
+                )
+                Text(
+                    stringResource(R.string.app_tagline), color = ink,
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontFamily = if (dark) FontFamily.Serif else FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Text("Meet Panacea, your goddess of things to do.", color = ink, style = MaterialTheme.typography.bodySmall)
             }
-            if(dark) listOf(.12f,.35f,.55f,.95f).forEach { x -> drawCircle(Color(0xFFE2BF79),2.dp.toPx(),Offset(size.width*x,20.dp.toPx())) }
+            Surface(
+                modifier = Modifier.weight(.65f), color = Color(0xFFFCF2D9),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+            ) {
+                Image(
+                    painterResource(R.drawable.goddess_panacea),
+                    contentDescription = "Panacea, from an eighteenth-century woodcut by J. Gazola",
+                    modifier = Modifier.fillMaxWidth().height(148.dp).padding(5.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
         }
-        Column(Modifier.padding(22.dp).fillMaxWidth(.72f), verticalArrangement=Arrangement.spacedBy(10.dp)) {
-            Text("BATON ROUGE, LOUISIANA",style=MaterialTheme.typography.labelSmall,color=ink)
-            Text(androidx.compose.ui.res.stringResource(R.string.app_tagline),style=MaterialTheme.typography.headlineMedium.copy(fontFamily=if(dark) FontFamily.Serif else FontFamily.SansSerif),color=ink)
-            Text("Find a show. Meet your people.",style=MaterialTheme.typography.bodySmall,color=ink)
-        }
+        Button(
+            onClick = { onPick?.invoke() }, enabled = onPick != null,
+            shape = RectangleShape, modifier = Modifier.fillMaxWidth()
+        ) { Text("✦  Pick a cure for me") }
     }
 }
-
-
-

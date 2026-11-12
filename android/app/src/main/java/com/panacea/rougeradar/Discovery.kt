@@ -31,7 +31,7 @@ fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)-
         (period!="This week" || e.daysAway<=7) && (period!="Weekend" || e.date.dayOfWeek.value>=6)
     }.let { list -> when { tab=="Nearby"->list.sortedBy { it.miles };sort=="Trending"->list.sortedByDescending { it.recent };sort=="Price"->list.sortedBy { it.price };else->list.sortedBy { it.daysAway } } }
     LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
-        if(tab=="Discover") item { RiverHero() }
+        if(tab=="Discover") item { RiverHero(onPick = if (filtered.isEmpty()) null else ({ onOpen(filtered.random().id) })) }
         item { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved for a good day";"Profile"->"Your next good stories";else->"Around the Red Stick"},style=MaterialTheme.typography.headlineSmall)
             Text(if(tab=="Profile") "Local guest · plans saved on this device" else "Baton Rouge · sample listings",style=MaterialTheme.typography.labelMedium)
@@ -46,6 +46,7 @@ fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)-
             FilterMenu(price,listOf("Any price","Free","Under $25"),Modifier.weight(1f)){price=it}
             FilterMenu(sort,listOf("Soonest","Trending","Price"),Modifier.weight(1f)){sort=it}
         } }
+        if (tab == "Profile") item { PhotoCredits() }
         item { Text("${filtered.size} events · Demo data",style=MaterialTheme.typography.labelSmall) }
         if(filtered.isEmpty()) item { Column(Modifier.padding(vertical=24.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("A little quiet here.",style=MaterialTheme.typography.titleLarge)
@@ -69,8 +70,9 @@ fun FilterMenu(value:String,options:List<String>,modifier:Modifier=Modifier,onCh
 @Composable
 fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Unit,onSave:()->Unit) {
     OutlinedCard(modifier=Modifier.fillMaxWidth().clickable(onClick=onOpen),shape=RectangleShape) {
+        EventCover(e, Modifier.fillMaxWidth().height(148.dp))
         Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondaryContainer).padding(start=18.dp,end=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-            Text("${e.symbol}  ${e.category.uppercase()}",style=MaterialTheme.typography.labelMedium)
+            Text("✦  Boredom remedy",style=MaterialTheme.typography.labelMedium)
             TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave) { Text(if(saved) "♥ Unsave" else "♡ Save") }
         }
         Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
