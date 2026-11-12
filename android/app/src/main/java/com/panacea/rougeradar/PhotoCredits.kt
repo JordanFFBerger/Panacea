@@ -21,7 +21,7 @@ private val photoCredits = listOf(
     PhotoCredit("Hands shaping clay on a pottery wheel", "Tuan Nguyen", "https://unsplash.com/photos/hands-shaping-clay-on-a-pottery-wheel-_fxvuMucGDs", "Unsplash License", "https://unsplash.com/license"),
     PhotoCredit("Exploration (game) Dice", "Smartiperson", "https://commons.wikimedia.org/wiki/File:Exploration_(game)_Dice.jpg", "CC0 1.0", "https://creativecommons.org/publicdomain/zero/1.0/"),
     PhotoCredit("Baton Rouge 2017 By the Levee", "SnippyHolloW", "https://commons.wikimedia.org/wiki/File:Baton_Rouge_2017_By_the_Levee.jpg", "CC BY-SA 2.0", "https://creativecommons.org/licenses/by-sa/2.0/"),
-    PhotoCredit("Panacea Helping the Sick", "J. Gazola (1716)", "https://commons.wikimedia.org/wiki/File:Panacea.jpg", "Public domain", "https://creativecommons.org/publicdomain/mark/1.0/")
+    PhotoCredit("Panakeia statue, Archaeological Museum of Dion", "Carole Raddato; cropped portrait", "https://commons.wikimedia.org/wiki/File:The_children_of_Asklepios,_Panakeia,_2nd_c._AD,_Archaeological_Museum,_Dion_(7076604419)_cropped_detail.jpg", "CC BY-SA 2.0", "https://creativecommons.org/licenses/by-sa/2.0/")
 )
 
 @Composable

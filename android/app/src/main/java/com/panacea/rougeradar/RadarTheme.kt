@@ -70,7 +70,7 @@ fun RiverHero(onPick: (() -> Unit)?) {
             ) {
                 Image(
                     painterResource(R.drawable.goddess_panacea),
-                    contentDescription = "Panacea, from an eighteenth-century woodcut by J. Gazola",
+                    contentDescription = "Panacea in draped robes, Archaeological Museum of Dion",
                     modifier = Modifier.fillMaxWidth().height(148.dp).padding(5.dp),
                     contentScale = ContentScale.Fit
                 )
