@@ -69,14 +69,15 @@ class PanaceaJourneyTest {
         app.onNodeWithText("Bored? We have the cure!").assertIsDisplayed()
     }
 
-    @Test fun listeningRoomShowsTheCreditedTrackAndOptInPlayer() {
+    @Test fun listeningRoomPlaysAndPausesTheBundledTrack() {
         openJazz()
-        app.onNodeWithText("Take Five").performScrollTo().assertIsDisplayed()
-        app.onNodeWithText("The Dave Brubeck Quartet").performScrollTo().assertIsDisplayed()
-        app.onNodeWithText("▶  Open in-app player").performScrollTo().assertIsEnabled()
-        app.onNodeWithText("Close player").assertDoesNotExist()
+        app.onNodeWithText("On the Cool Side").performScrollTo().assertIsDisplayed()
+        app.onNodeWithText("Kevin MacLeod").performScrollTo().assertIsDisplayed()
+        app.onNodeWithText("Play preview").performScrollTo().performClick()
+        app.onNodeWithTag("preview-progress").performScrollTo().assertIsDisplayed()
+        app.onNodeWithText("Pause preview").performScrollTo().performClick()
+        app.onNodeWithText("Play preview").assertIsDisplayed()
     }
-
     @Test fun androidClientReadsRealEventsFromTheRunningBackend() = runBlocking {
         val events = EventApiClient.fetchEvents()
         assertTrue(events.any { it.id == "mariachi-heritage-2026" && it.priceMinUsd == 20.0 })

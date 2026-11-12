@@ -30,4 +30,4 @@ The repository root's `app/` directory contains the earlier browser design refer
 
 The Discover hero features a cropped portrait of the draped Panakeia statue at the Archaeological Museum of Dion and a **Pick a cure for me** button that chooses an event from the current filters. Event cards and details display human-made, offline cover photos. See the [photo credits and license links](PHOTO-CREDITS.md).
 
-Music details offer an opt-in Listening Room. The demo jazz event features [Take Five by The Dave Brubeck Quartet](https://www.youtube.com/watch?v=-DHuW1h1wHw) as a mood match, with the official YouTube embed and a watch link. Playback needs internet access and is subject to YouTube availability. No media is downloaded or bundled.
+Music details offer an offline Listening Room. The fictional jazz event features [On the Cool Side](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100124) by Kevin MacLeod (incompetech.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The original MP3 is bundled unchanged.

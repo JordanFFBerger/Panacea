@@ -1,93 +1,133 @@
 package com.panacea.rougeradar
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.graphics.Color
-import android.net.Uri
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.media.MediaPlayer
 import androidx.activity.ComponentActivity
+import androidx.annotation.RawRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.delay
+import java.util.Locale
 
-data class EventTrack(val title: String, val artist: String, val videoId: String, val isMoodMatch: Boolean = false) {
-    init { require(videoId.matches(Regex("[A-Za-z0-9_-]{11}"))) }
-    val watchUrl get() = "https://www.youtube.com/watch?v=$videoId"
+data class EventTrack(val title: String, val artist: String, @RawRes val audioRes: Int, val sourceUrl: String)
+
+private fun timeLabel(ms: Int): String {
+    val seconds = ms / 1000
+    return String.format(Locale.US, "%d:%02d", seconds / 60, seconds % 60)
 }
 
 @Composable
 fun EventListeningRoom(track: EventTrack) {
     val context = LocalContext.current
-    var expanded by remember(track) { mutableStateOf(false) }
-    var noHandler by remember(track) { mutableStateOf(false) }
+    val uriHandler = LocalUriHandler.current
+    var player by remember(track) { mutableStateOf<MediaPlayer?>(null) }
+    var playing by remember(track) { mutableStateOf(false) }
+    var elapsed by remember(track) { mutableIntStateOf(0) }
+    var duration by remember(track) { mutableIntStateOf(0) }
+    var seeking by remember(track) { mutableStateOf<Float?>(null) }
+    var failed by remember(track) { mutableStateOf(false) }
+
+    fun pause() {
+        player?.let { p ->
+            if (p.isPlaying) p.pause()
+            elapsed = p.currentPosition
+        }
+        playing = false
+    }
+
     DisposableEffect(context, track) {
         val lifecycle = (context as? ComponentActivity)?.lifecycle
         val observer = object : DefaultLifecycleObserver {
-            override fun onStop(owner: LifecycleOwner) { expanded = false }
+            override fun onStop(owner: LifecycleOwner) { pause() }
         }
         lifecycle?.addObserver(observer)
-        onDispose { lifecycle?.removeObserver(observer) }
+        onDispose {
+            lifecycle?.removeObserver(observer)
+            player?.release()
+        }
     }
+
+    LaunchedEffect(playing, player) {
+        val current = player ?: return@LaunchedEffect
+        while (playing) {
+            elapsed = current.currentPosition
+            delay(200)
+        }
+    }
+
     Surface(color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text("♫  THE LISTENING ROOM", style = MaterialTheme.typography.labelLarge)
             Text(track.title, style = MaterialTheme.typography.titleLarge)
             Text(track.artist, style = MaterialTheme.typography.bodyMedium)
-            if (track.isMoodMatch) Text("A jazz mood match for this fictional lineup.", style = MaterialTheme.typography.bodySmall)
-            if (expanded) {
-                val appOrigin = "https://${context.packageName}"
-                AndroidView(
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp).aspectRatio(16f / 9f),
-                    factory = { ctx ->
-                        WebView(ctx).apply {
-                            setBackgroundColor(Color.BLACK)
-                            settings.javaScriptEnabled = true
-                            settings.domStorageEnabled = true
-                            settings.allowFileAccess = false
-                            settings.allowContentAccess = false
-                            settings.mediaPlaybackRequiresUserGesture = true
-                            webViewClient = object : WebViewClient() {
-                                override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean =
-                                    request.isForMainFrame || request.url.scheme != "https"
-                            }
-                            loadDataWithBaseURL(appOrigin, """
-                                <!doctype html><html><head>
-                                <meta name="viewport" content="width=device-width,initial-scale=1">
-                                <meta name="referrer" content="strict-origin-when-cross-origin">
-                                <style>html,body,iframe{margin:0;width:100%;height:100%;border:0;background:#000;display:block}</style>
-                                </head><body><iframe title="YouTube music preview"
-                                src="https://www.youtube.com/embed/${track.videoId}?playsinline=1"
-                                allow="encrypted-media; picture-in-picture"></iframe></body></html>
-                            """.trimIndent(), "text/html", "UTF-8", null)
+            Text("Jazz mood match for this fictional lineup · available offline", style = MaterialTheme.typography.bodySmall)
+            if (duration > 0) {
+                Slider(
+                    value = seeking ?: elapsed.toFloat(),
+                    onValueChange = { seeking = it },
+                    onValueChangeFinished = {
+                        seeking?.toInt()?.let { position ->
+                            player?.seekTo(position)
+                            elapsed = position
                         }
+                        seeking = null
                     },
-                    onRelease = { player -> player.stopLoading(); player.destroy() },
-                    update = {}
+                    valueRange = 0f..duration.toFloat(),
+                    modifier = Modifier.testTag("preview-progress")
                 )
+                Text("${timeLabel(seeking?.toInt() ?: elapsed)} / ${timeLabel(duration)}",
+                    style = MaterialTheme.typography.labelSmall)
             }
-            OutlinedButton(onClick = { expanded = !expanded }, shape = RectangleShape) {
-                Text(if (expanded) "Close player" else "▶  Open in-app player")
-            }
-            TextButton(
-                onClick = {
+            Button(onClick = {
+                if (playing) {
+                    pause()
+                } else {
+                    failed = false
                     try {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(track.watchUrl)))
-                    } catch (_: ActivityNotFoundException) {
-                        noHandler = true
+                        val current = player ?: checkNotNull(MediaPlayer.create(context, track.audioRes)).also { p ->
+                            player = p
+                            duration = p.duration
+                            p.setOnCompletionListener { completed ->
+                                playing = false
+                                elapsed = 0
+                                completed.seekTo(0)
+                            }
+                            p.setOnErrorListener { broken, _, _ ->
+                                playing = false
+                                failed = true
+                                duration = 0
+                                elapsed = 0
+                                seeking = null
+                                player = null
+                                broken.release()
+                                true
+                            }
+                        }
+                        current.start()
+                        playing = true
+                    } catch (_: RuntimeException) {
+                        player?.release()
+                        player = null
+                        duration = 0
+                        elapsed = 0
+                        failed = true
                     }
-                },
-                shape = RectangleShape
-            ) { Text("Watch on YouTube ↗") }
-            if (noHandler) Text("No browser or YouTube app is available.", style = MaterialTheme.typography.bodySmall)
+                }
+            }, shape = RectangleShape) { Text(if (playing) "Pause preview" else "Play preview") }
+            if (failed) Text("The preview could not play. Tap Play preview to retry.", style = MaterialTheme.typography.bodySmall)
+            Row {
+                TextButton(onClick = { uriHandler.openUri(track.sourceUrl) }, shape = RectangleShape) { Text("Incompetech ↗") }
+                TextButton(onClick = { uriHandler.openUri("https://creativecommons.org/licenses/by/4.0/") },
+                    shape = RectangleShape) { Text("CC BY 4.0") }
+            }
         }
     }
 }
