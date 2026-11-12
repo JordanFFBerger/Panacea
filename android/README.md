@@ -1,4 +1,4 @@
-# Rouge Radar — native Android app
+# Panacea — native Android app
 
 Kotlin + Jetpack Compose. This is an installable Android app, with no WebView and no web server.
 

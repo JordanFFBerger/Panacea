@@ -36,7 +36,7 @@ fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()-
             context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://www.openstreetmap.org/?mlat=${e.latitude}&mlon=${e.longitude}#map=15/${e.latitude}/${e.longitude}")))
         },modifier=Modifier.fillMaxWidth()) { Text("Open sample area in Maps ↗") }
         TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={
-            val share=Intent(Intent.ACTION_SEND).apply { type="text/plain";putExtra(Intent.EXTRA_TEXT,"Rouge Radar demo: ${e.title}\n${e.dateLabel} ${e.time} · ${e.priceLabel}\n${e.venue}\n${e.activities.joinToString()}\nFictional sample event; no actual reservation.") }
+            val share=Intent(Intent.ACTION_SEND).apply { type="text/plain";putExtra(Intent.EXTRA_TEXT,"${context.getString(R.string.app_name)} demo: ${e.title}\n${e.dateLabel} ${e.time} · ${e.priceLabel}\n${e.venue}\n${e.activities.joinToString()}\nFictional sample event; no actual reservation.") }
             context.startActivity(Intent.createChooser(share,"Share sample event"))
         }) { Text("Share event summary") }
         Text("Demo only. No ticket is issued, no payment is collected, and listings are fictional. Optional purchases may cost extra.",style=MaterialTheme.typography.bodySmall)

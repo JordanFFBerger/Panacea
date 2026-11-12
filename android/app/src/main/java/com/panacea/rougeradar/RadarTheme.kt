@@ -52,7 +52,7 @@ fun RiverHero() {
         }
         Column(Modifier.padding(22.dp).fillMaxWidth(.72f), verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("BATON ROUGE, LOUISIANA",style=MaterialTheme.typography.labelSmall,color=ink)
-            Text(if(dark) "A good night\nstarts here." else "A little out there.\nA lot to get into.",style=MaterialTheme.typography.headlineMedium.copy(fontFamily=if(dark) FontFamily.Serif else FontFamily.SansSerif),color=ink)
+            Text(androidx.compose.ui.res.stringResource(R.string.app_tagline),style=MaterialTheme.typography.headlineMedium.copy(fontFamily=if(dark) FontFamily.Serif else FontFamily.SansSerif),color=ink)
             Text("Find a show. Meet your people.",style=MaterialTheme.typography.bodySmall,color=ink)
         }
     }

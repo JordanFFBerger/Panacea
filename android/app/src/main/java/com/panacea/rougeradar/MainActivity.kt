@@ -64,7 +64,7 @@ fun RadarApp() {
     RadarTheme(mode) {
         BackHandler(selected!=-1) { selected=-1 }
         Scaffold(topBar={ Surface { Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal=16.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-            Text("↗ rouge radar",style=MaterialTheme.typography.titleLarge)
+            Text(androidx.compose.ui.res.stringResource(R.string.app_name),style=MaterialTheme.typography.titleLarge)
             TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={mode=when(mode){"Auto"->"Day";"Day"->"Night";else->"Auto"};prefs.edit().putString("theme",mode).apply()}) { Text("◐ $mode") }
         } } },bottomBar={ Surface(tonalElevation=3.dp) { Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(4.dp)) {
             listOf("Discover","Nearby","Saved","Profile").forEach { name ->

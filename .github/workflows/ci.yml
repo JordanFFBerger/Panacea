@@ -42,6 +42,6 @@ jobs:
         run: bash ./gradlew --no-daemon testDebugUnitTest assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: rouge-radar-debug-apk
+          name: panacea-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error

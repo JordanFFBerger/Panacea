@@ -1,4 +1,4 @@
-# Panacea — Rouge Radar Android
+# Panacea Android
 
 The native Kotlin / Jetpack Compose Android app lives in [android/](android/README.md).
 
