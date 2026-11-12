@@ -1,4 +1,4 @@
-name: Panacea CI
+name: Panacea QA
 
 on:
   push:
@@ -9,9 +9,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: panacea-qa-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backend:
-    name: Web syntax and backend tests
+    name: Syntax, integration, and API end-to-end
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -21,8 +25,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm run check
-      - run: node --test backend/backend.test.cjs
+      - run: npm run qa -- syntax integration api-e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-qa-report
+          path: qa-results/summary.json
 
   android:
     name: Android unit tests and debug APK
@@ -32,16 +40,63 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Test and assemble
-        working-directory: android
-        run: bash ./gradlew --no-daemon testDebugUnitTest assembleDebug
+      - run: npm run qa -- android-unit
       - uses: actions/upload-artifact@v4
         with:
           name: panacea-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-unit-qa-report
+          path: |
+            qa-results/summary.json
+            android/app/build/test-results/testDebugUnitTest/*.xml
+
+  device:
+    name: Android end-to-end and API connectivity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Enable emulator hardware acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: npm run qa -- android-e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-device-qa-report
+          path: |
+            qa-results/summary.json
+            android/app/build/outputs/androidTest-results/connected/**/*.xml
+            android/app/build/reports/androidTests/connected/
