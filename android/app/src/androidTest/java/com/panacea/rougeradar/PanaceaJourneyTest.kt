@@ -1,0 +1,86 @@
+package com.panacea.rougeradar
+
+import android.content.Context
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class PanaceaJourneyTest {
+    @get:Rule val app = createAndroidComposeRule<MainActivity>()
+
+    @Before fun resetAppPreferences() {
+        app.activityRule.scenario.onActivity {
+            it.getSharedPreferences("radar", Context.MODE_PRIVATE).edit().clear().commit()
+        }
+        app.activityRule.scenario.recreate()
+    }
+
+    private fun openJazz() {
+        app.onNodeWithTag("event-list").performScrollToNode(hasText("Jazz under the stars"))
+        app.onNodeWithText("Jazz under the stars").performClick()
+        app.onNodeWithText("Jazz under the stars").assertIsDisplayed()
+    }
+
+    @Test fun searchOpensEventAndShowsPriceAndActivities() {
+        app.onNodeWithTag("event-list").performScrollToNode(hasTestTag("event-search"))
+        app.onNodeWithTag("event-search").performTextInput("chapter")
+        app.onNodeWithTag("event-search").performImeAction()
+        app.onNodeWithTag("event-list").performScrollToNode(hasText("One more chapter"))
+        app.onNodeWithText("One more chapter").performClick()
+        app.onNodeWithText("Free").assertIsDisplayed()
+        app.onNodeWithText("✓ Book discussion").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test fun savingSurvivesActivityRecreation() {
+        openJazz()
+        app.onNodeWithText("♡ Save for later").performScrollTo().performClick()
+        app.onNodeWithText("Saved").performClick()
+        app.activityRule.scenario.recreate()
+        app.onNodeWithTag("event-list").performScrollToNode(hasText("Jazz under the stars"))
+        app.onNodeWithText("Jazz under the stars").assertIsDisplayed()
+    }
+
+    @Test fun signupAppearsInProfileAndCanBeUndone() {
+        openJazz()
+        app.onNodeWithText("Count me in · demo signup").performScrollTo().performClick()
+        app.onNodeWithText("Profile").performClick()
+        app.onNodeWithTag("event-list").performScrollToNode(hasText("Jazz under the stars"))
+        app.onNodeWithText("Jazz under the stars").performClick()
+        app.onNodeWithText("✓ On the demo list · undo").performScrollTo().performClick()
+        app.onNodeWithText("Profile").performClick()
+        app.onNodeWithTag("event-list").performScrollToNode(hasText("A little quiet here."))
+        app.onNodeWithText("A little quiet here.").assertIsDisplayed()
+    }
+
+    @Test fun explicitThemeSurvivesActivityRecreation() {
+        app.onNodeWithText("◐ Auto").performClick()
+        app.onNodeWithText("✦  BATON ROUGE, LA").assertIsDisplayed()
+        app.onNodeWithText("◐ Day").performClick()
+        app.onNodeWithText("✦  AFTER HOURS").assertIsDisplayed()
+        app.activityRule.scenario.recreate()
+        app.onNodeWithText("◐ Night").assertIsDisplayed()
+        app.onNodeWithText("Bored? We have the cure!").assertIsDisplayed()
+    }
+
+    @Test fun listeningRoomShowsTheCreditedTrackAndOptInPlayer() {
+        openJazz()
+        app.onNodeWithText("Take Five").performScrollTo().assertIsDisplayed()
+        app.onNodeWithText("The Dave Brubeck Quartet").performScrollTo().assertIsDisplayed()
+        app.onNodeWithText("▶  Open in-app player").performScrollTo().assertIsEnabled()
+        app.onNodeWithText("Close player").assertDoesNotExist()
+    }
+
+    @Test fun androidClientReadsRealEventsFromTheRunningBackend() = runBlocking {
+        val events = EventApiClient.fetchEvents()
+        assertTrue(events.any { it.id == "mariachi-heritage-2026" && it.priceMinUsd == 20.0 })
+        assertTrue(events.any { it.id == "white-light-night-2026" && it.priceMinUsd == 0.0 })
+        assertTrue(events.any { it.id == "weekend-kick-off-2026-11-05" && it.priceMinUsd == null })
+    }
+}

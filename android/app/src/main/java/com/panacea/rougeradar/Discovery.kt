@@ -12,12 +12,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)->Unit,onSave:(Int)->Unit) {
+    val focusManager = LocalFocusManager.current
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("All") }
     var period by rememberSaveable { mutableStateOf("Any date") }
@@ -30,14 +36,16 @@ fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)-
         (price!="Free" || e.price==0) && (price!="Under $25" || e.price<=25) &&
         (period!="This week" || e.daysAway<=7) && (period!="Weekend" || e.date.dayOfWeek.value>=6)
     }.let { list -> when { tab=="Nearby"->list.sortedBy { it.miles };sort=="Trending"->list.sortedByDescending { it.recent };sort=="Price"->list.sortedBy { it.price };else->list.sortedBy { it.daysAway } } }
-    LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+    LazyColumn(modifier=Modifier.testTag("event-list"),contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         if(tab=="Discover") item { RiverHero(onPick = if (filtered.isEmpty()) null else ({ onOpen(filtered.random().id) })) }
         item { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved for a good day";"Profile"->"Your next good stories";else->"Around the Red Stick"},style=MaterialTheme.typography.headlineSmall)
             Text(if(tab=="Profile") "Local guest · plans saved on this device" else "Baton Rouge · sample listings",style=MaterialTheme.typography.labelMedium)
             if(tab=="Nearby") Text("Sorted by sample distance. Open any event for its map link.",style=MaterialTheme.typography.bodySmall)
         } }
-        item { OutlinedTextField(value=query,onValueChange={query=it},label={Text("Search events, activities, places")},singleLine=true,modifier=Modifier.fillMaxWidth(),shape=RectangleShape) }
+        item { OutlinedTextField(value=query,onValueChange={query=it},label={Text("Search events, activities, places")},singleLine=true,modifier=Modifier.fillMaxWidth().testTag("event-search"),shape=RectangleShape,
+            keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search),
+            keyboardActions=KeyboardActions(onSearch={focusManager.clearFocus()})) }
         item { Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             listOf("All","Music","Books","Food","Arts","Gaming","Outdoors").forEach { name -> FilterChip(selected=category==name,onClick={category=name},label={Text(name)},shape=RectangleShape) }
         } }
