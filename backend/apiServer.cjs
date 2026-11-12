@@ -5,7 +5,7 @@ const { loadEvents } = require("./eventRepository.cjs");
 const PORT = Number(process.env.API_PORT || 3000);
 const HOST = "127.0.0.1";
 
-if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+if (!Number.isInteger(PORT) || PORT < 0 || PORT > 65535) {
   throw new Error("Invalid API port");
 }
 
@@ -138,7 +138,7 @@ const server = http.createServer((req, res) => {
 
 if (require.main === module) {
   server.listen(PORT, HOST, () => {
-    console.log(`Panacea API running at http://${HOST}:${PORT}`);
+    console.log(`Panacea API running at http://${HOST}:${server.address().port}`);
     console.log(`Loaded ${events.length} events`);
   });
 }
