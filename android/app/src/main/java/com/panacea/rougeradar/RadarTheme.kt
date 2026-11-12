@@ -3,6 +3,9 @@ package com.panacea.rougeradar
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.ui.Alignment
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,45 +43,83 @@ fun RadarTheme(mode: String, content: @Composable () -> Unit) {
 }
 
 @Composable
+fun DiscoverBackdrop(modifier: Modifier = Modifier) {
+    val dark = MaterialTheme.colorScheme.background == Night.background
+    Image(
+        painterResource(if (dark) R.drawable.discover_night else R.drawable.discover_day),
+        contentDescription = null, modifier = modifier, contentScale = ContentScale.Crop,
+        alpha = if (dark) .18f else .12f
+    )
+}
+
+@Composable
 fun RiverHero(onPick: (() -> Unit)?) {
     val dark = MaterialTheme.colorScheme.background == Night.background
     val ink = MaterialTheme.colorScheme.onBackground
-    val colors = if (dark) listOf(Color(0xFF14283A), Color(0xFF45324E))
-                 else listOf(Color(0xFFF1FFE2), Color(0xFFA1E2EE), Color(0xFFDAF1C2))
-    Column(
-        Modifier.fillMaxWidth().background(Brush.linearGradient(colors)).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    if (dark) "✦  AFTER HOURS" else "✦  BATON ROUGE, LA",
-                    color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelMedium
-                )
-                Text(
-                    stringResource(R.string.app_tagline), color = ink,
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontFamily = if (dark) FontFamily.Serif else FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold
+    val uriHandler = LocalUriHandler.current
+    var showPanacea by rememberSaveable { mutableStateOf(false) }
+    val colors = if (dark) listOf(Color(0xF514233A), Color(0xBA192B43), Color(0x25331C45))
+                 else listOf(Color(0xF7E7FFEB), Color(0xC4C0E9F3), Color(0x3894DDD6))
+    Box(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondaryContainer)) {
+        Image(
+            painterResource(if (dark) R.drawable.discover_night else R.drawable.discover_day),
+            contentDescription = null, modifier = Modifier.matchParentSize(), contentScale = ContentScale.Crop
+        )
+        Box(Modifier.matchParentSize().background(Brush.horizontalGradient(colors)))
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        if (dark) "✦  AFTER HOURS" else "✦  BATON ROUGE, LA",
+                        color = ink, style = MaterialTheme.typography.labelMedium
                     )
-                )
-                Text("Meet Panacea, your goddess of things to do.", color = ink, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        stringResource(R.string.app_tagline), color = ink,
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontFamily = if (dark) FontFamily.Serif else FontFamily.SansSerif,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                    TextButton(
+                        onClick = { showPanacea = true }, shape = RectangleShape,
+                        colors = ButtonDefaults.textButtonColors(contentColor = ink),
+                        contentPadding = PaddingValues(horizontal = 0.dp)
+                    ) { Text("Meet Panacea", textDecoration = TextDecoration.Underline) }
+                }
+                Surface(
+                    modifier = Modifier.weight(.58f), color = Color(0xFFFCF2D9),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                ) {
+                    Image(
+                        painterResource(R.drawable.goddess_panacea),
+                        contentDescription = "Panacea in draped robes, Archaeological Museum of Dion",
+                        modifier = Modifier.fillMaxWidth().height(116.dp).padding(3.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
-            Surface(
-                modifier = Modifier.weight(.65f), color = Color(0xFFFCF2D9),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-            ) {
-                Image(
-                    painterResource(R.drawable.goddess_panacea),
-                    contentDescription = "Panacea in draped robes, Archaeological Museum of Dion",
-                    modifier = Modifier.fillMaxWidth().height(148.dp).padding(5.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
+            Button(
+                onClick = { onPick?.invoke() }, enabled = onPick != null,
+                shape = RectangleShape, modifier = Modifier.fillMaxWidth()
+            ) { Text("✦  Pick a cure for me") }
         }
-        Button(
-            onClick = { onPick?.invoke() }, enabled = onPick != null,
-            shape = RectangleShape, modifier = Modifier.fillMaxWidth()
-        ) { Text("✦  Pick a cure for me") }
     }
+    if (showPanacea) AlertDialog(
+        onDismissRequest = { showPanacea = false },
+        title = { Text("Panacea") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(stringResource(R.string.panacea_museum_excerpt))
+                TextButton(
+                    onClick = { uriHandler.openUri("https://collection.sciencemuseumgroup.org.uk/people/cp117496/panacea") },
+                    shape = RectangleShape, contentPadding = PaddingValues(horizontal = 0.dp)
+                ) { Text("Science Museum Group ↗") }
+                HorizontalDivider()
+                Text(stringResource(R.string.app_tagline), style = MaterialTheme.typography.titleMedium)
+                val note = stringResource(R.string.panacea_boredom_note)
+                if (note.isNotBlank()) Text(note)
+            }
+        },
+        confirmButton = { TextButton(onClick = { showPanacea = false }, shape = RectangleShape) { Text("Done") } }
+    )
 }

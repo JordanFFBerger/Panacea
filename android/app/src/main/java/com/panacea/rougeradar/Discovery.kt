@@ -36,7 +36,7 @@ fun EventDiscovery(tab:String,saved:Set<String>,joined:Set<String>,onOpen:(Int)-
         (price!="Free" || e.price==0) && (price!="Under $25" || e.price<=25) &&
         (period!="This week" || e.daysAway<=7) && (period!="Weekend" || e.date.dayOfWeek.value>=6)
     }.let { list -> when { tab=="Nearby"->list.sortedBy { it.miles };sort=="Trending"->list.sortedByDescending { it.recent };sort=="Price"->list.sortedBy { it.price };else->list.sortedBy { it.daysAway } } }
-    LazyColumn(modifier=Modifier.testTag("event-list"),contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+    LazyColumn(modifier=Modifier.testTag("event-list"),contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=16.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
         if(tab=="Discover") item { RiverHero(onPick = if (filtered.isEmpty()) null else ({ onOpen(filtered.random().id) })) }
         item { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved for a good day";"Profile"->"Your next good stories";else->"Around the Red Stick"},style=MaterialTheme.typography.headlineSmall)
@@ -78,7 +78,7 @@ fun FilterMenu(value:String,options:List<String>,modifier:Modifier=Modifier,onCh
 @Composable
 fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Unit,onSave:()->Unit) {
     OutlinedCard(modifier=Modifier.fillMaxWidth().clickable(onClick=onOpen),shape=RectangleShape) {
-        EventCover(e, Modifier.fillMaxWidth().height(148.dp))
+        EventCover(e, Modifier.fillMaxWidth().height(132.dp))
         Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondaryContainer).padding(start=18.dp,end=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
             Text(if(e.track != null) "♫  In-app listening room" else "✦  Boredom remedy",style=MaterialTheme.typography.labelMedium)
             TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave) { Text(if(saved) "♥ Unsave" else "♡ Save") }

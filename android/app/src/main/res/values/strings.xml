@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">Panacea</string>
     <string name="app_tagline">Bored? We have the cure!</string>
+    <string name="panacea_museum_excerpt">goddess of universal health; mythological daughter of Asclepius/Aesculapius and Epione and sister of Hygeia.</string>
+    <!-- Add your own boredom connection here. The museum excerpt above stays verbatim. -->
+    <string name="panacea_boredom_note"></string>
 </resources>

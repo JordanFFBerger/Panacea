@@ -69,6 +69,14 @@ class PanaceaJourneyTest {
         app.onNodeWithText("Bored? We have the cure!").assertIsDisplayed()
     }
 
+    @Test fun meetPanaceaOpensAndDismissesTheAttributedSynopsis() {
+        app.onNodeWithText("Meet Panacea").performClick()
+        app.onNodeWithText("goddess of universal health", substring = true).assertIsDisplayed()
+        app.onNodeWithText("Science Museum Group ↗").assertIsDisplayed()
+        app.onNodeWithText("Done").performClick()
+        app.onNodeWithText("Science Museum Group ↗").assertDoesNotExist()
+    }
+
     @Test fun listeningRoomPlaysAndPausesTheBundledTrack() {
         openJazz()
         app.onNodeWithText("On the Cool Side").performScrollTo().assertIsDisplayed()

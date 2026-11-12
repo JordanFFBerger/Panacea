@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 
 private data class PhotoCredit(val title: String, val author: String, val source: String, val license: String, val terms: String)
 private val photoCredits = listOf(
+    PhotoCredit("Downtown Baton Rouge, Louisiana and Mississippi River", "Spatms", "https://commons.wikimedia.org/wiki/File:Downtown_Baton_Rouge%2C_Louisiana_and_Mississippi_River.jpg", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0/"),
+    PhotoCredit("Downtown Baton Rouge", "getmahesh", "https://commons.wikimedia.org/wiki/File:Downtown_Baton_Rouge.jpg", "CC BY-SA 2.0", "https://creativecommons.org/licenses/by-sa/2.0/"),
     PhotoCredit("Ravi Coltrane at the Blue Note", "Frank Schulenburg", "https://commons.wikimedia.org/wiki/File:Ravi_Coltrane_at_the_Blue_Note%2C_March_7%2C_2023-L1002389.jpg", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0/"),
     PhotoCredit("Warm cup of coffee on an open book", "Shixart1985", "https://commons.wikimedia.org/wiki/File:Warm_cup_of_coffee_sits_on_an_open_book_on_a_wooden_table_in_a_cozy_workspace.jpg", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0/"),
     PhotoCredit("Tomatoes at Hope Farmers Market", "Larry D. Moore", "https://commons.wikimedia.org/wiki/File:Tomatoes_at_Hope_Farmers_Market.jpg", "CC BY 4.0", "https://creativecommons.org/licenses/by/4.0/"),

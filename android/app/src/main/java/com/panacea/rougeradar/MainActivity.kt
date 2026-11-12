@@ -76,7 +76,8 @@ fun RadarApp() {
                 }
             }
         } } }) { padding ->
-            Box(Modifier.padding(padding)) {
+            Box(Modifier.fillMaxSize().padding(padding)) {
+                if (tab == "Discover" && selected == -1) DiscoverBackdrop(Modifier.matchParentSize())
                 val event=SampleEvents.all.find { it.id==selected }
                 if(event!=null) EventDetails(event,event.id.toString() in saved,event.id.toString() in joined,{selected=-1},{toggle(event.id,false)},{toggle(event.id,true)})
                 else EventDiscovery(tab,saved,joined,{selected=it},{toggle(it,false)})
