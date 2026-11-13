@@ -65,10 +65,12 @@ class PanaceaJourneyTest {
         assertNull(event.checkedDate)
     }
 
-    @Test fun savingSurvivesActivityRecreation() {
+    @Test fun savedEventAppearsInProfileAndSurvivesActivityRecreation() {
         openEvent("Mariachi", "Mariachi Herencia")
         app.onNodeWithText("♡ Save for later").performScrollTo().performClick()
-        app.onNodeWithText("Saved").performClick()
+        app.onNodeWithText("Profile").performClick()
+        app.onNodeWithText("Saved Events").assertIsDisplayed()
+        awaitEvent("Mariachi Herencia")
         app.activityRule.scenario.recreate()
         awaitEvent("Mariachi Herencia")
         app.onNodeWithText("Mariachi Herencia", substring = true).assertIsDisplayed()

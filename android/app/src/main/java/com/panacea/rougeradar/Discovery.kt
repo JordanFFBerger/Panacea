@@ -31,7 +31,7 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
     var sort by rememberSaveable { mutableStateOf(if (tab == "Nearby") "Distance" else "Soonest") }
     val today = java.time.LocalDate.now(java.time.ZoneId.of("America/Chicago"))
     val filtered=events.filter { e ->
-        (tab!="Saved" || e.key in saved) && (tab!="Profile" || e.key in joined) &&
+        ((tab != "Saved" && tab != "Profile") || e.key in saved) &&
         (category=="All" || e.category==category) &&
         (query.isBlank() || "${e.title} ${e.venue} ${e.category} ${e.activities.joinToString()}".contains(query,true)) &&
         (price!="Free" || e.amount==0.0) && (price!="Under $25" || (e.amount?.let { it < 25.0 } == true)) &&
@@ -45,8 +45,8 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
     LazyColumn(modifier=Modifier.testTag("event-list"),contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=16.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
         if(tab=="Discover") item { RiverHero(onPick = if (filtered.isEmpty()) null else ({ onOpen(filtered.random().key) })) }
         item { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {
-            Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved for a good day";"Profile"->"Your next good stories";else->"Around the Red Stick"},style=MaterialTheme.typography.headlineSmall)
-            Text(if(tab=="Profile") "Local guest · plans saved on this device" else catalogStatus,style=MaterialTheme.typography.labelMedium)
+            Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved for a good day";"Profile"->"Saved Events";else->"Around the Red Stick"},modifier=if(tab=="Profile") Modifier.fillMaxWidth() else Modifier,textAlign=if(tab=="Profile") androidx.compose.ui.text.style.TextAlign.Center else androidx.compose.ui.text.style.TextAlign.Start,style=MaterialTheme.typography.headlineSmall)
+            Text(if(tab=="Profile") "Local guest · events saved on this device" else catalogStatus,style=MaterialTheme.typography.labelMedium)
             onRetry?.let { OutlinedButton(shape=RectangleShape,onClick=it) { Text("Retry event feed") } }
             if(tab=="Nearby" && sort=="Distance") Text("Known distances first. Check the event for venue information.",style=MaterialTheme.typography.bodySmall)
         } }
@@ -65,7 +65,7 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
         item { Text("${filtered.size} events",style=MaterialTheme.typography.labelSmall) }
         if(filtered.isEmpty()) item { Column(Modifier.padding(vertical=24.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("A little quiet here.",style=MaterialTheme.typography.titleLarge)
-            Text(if(tab=="Saved") "Save an event from Discover to find it here." else if(tab=="Profile") "Plans appear here when signups are available." else "Try another search or filter.")
+            Text(if(tab=="Saved" || tab=="Profile") "Save an event from Discover to find it here." else "Try another search or filter.")
             OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={query="";category="All";price="Any price";period="Any date"}) { Text("Reset filters") }
         } }
         items(filtered,key={it.key}) { e -> EventCard(e,e.key in saved,e.key in joined,tab=="Nearby",{onOpen(e.key)},{onSave(e.key)}) }
