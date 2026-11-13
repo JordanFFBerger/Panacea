@@ -3,7 +3,7 @@ const feed = "https://baton-rouge.hasthings.com/feeds/events.json";
 const library = "East Baton Rouge Parish Library";
 const libraryCalendar = "https://www.ebrpl.com/events-classes/";
 const categories = { music: "Music", "dj-party": "Music", art: "Arts", theatre: "Arts",
-  comedy: "Comedy", film: "Film", talk: "Talks", community: "Community", sports: "Sports" };
+  comedy: "Comedy", film: "Film", talk: "Talks", "food-drink": "Food", community: "Community", sports: "Sports" };
 
 function httpsUrl(value) {
   try { return new URL(value).protocol === "https:" ? value : null; }
@@ -22,8 +22,17 @@ function normalize(item) {
   const fromLibrary = Array.isArray(item.sources) && item.sources.includes(library);
   const explicitlyFree = /^(?:\[free\]|\(free\))\s|\bfree (?:admission|entry)\b|\((?:free|no cover)\)\s*$/i.test(title);
   const freeLibraryProgram = fromLibrary && !ticketUrl && !/\binformational only\b/i.test(title);
-  const category = /\b(book club|story\s?time)\b/i.test(title) ? "Books" :
-    Object.hasOwn(categories, item.category) ? categories[item.category] : "Other";
+  const primary = Object.hasOwn(categories, item.category) ? categories[item.category] : "Other";
+  const tags = new Set(Array.isArray(item.tags)
+    ? item.tags.filter(tag => tag?.kind === "genre").map(tag => tag.tag) : []);
+  const category = ["Community", "Other"].includes(primary)
+    ? tags.has("book-club") || tags.has("author-event") || /\b(book club|story\s?time)\b/i.test(title) ? "Books"
+      : tags.has("outdoor") || tags.has("neighborhood-cleanup") ? "Outdoors"
+      : tags.has("games") ? "Gaming"
+      : tags.has("food-and-beverage") ? "Food"
+      : tags.has("arts-and-culture") || tags.has("crafts") ? "Arts"
+      : primary
+    : primary;
   return {
     id: "hasthings:" + item.id, title, venue: item.venue.name, category,
     startLocal: toLocal(instant), endLocal: end >= instant ? toLocal(end) : null,

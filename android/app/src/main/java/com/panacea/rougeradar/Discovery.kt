@@ -54,7 +54,7 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
             keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search),
             keyboardActions=KeyboardActions(onSearch={focusManager.clearFocus()})) }
         item { Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            (listOf("All","Music","Books","Food","Arts","Gaming","Outdoors") + events.map { it.category }).distinct().forEach { name -> FilterChip(selected=category==name,onClick={category=name},label={Text(name)},shape=RectangleShape) }
+            (listOf("All","Music","Books","Food","Arts","Gaming","Outdoors","Sports","Film","Comedy") + events.map { it.category }).distinct().forEach { name -> FilterChip(selected=category==name,onClick={category=name},label={Text(name)},shape=RectangleShape) }
         } }
         item { Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
             FilterMenu(period,listOf("Any date","This week","Weekend"),Modifier.weight(1f)){period=it}

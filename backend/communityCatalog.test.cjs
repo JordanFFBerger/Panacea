@@ -61,3 +61,11 @@ test("bad upstream response is HTTP 503 rather than a pretend empty calendar", a
   t.after(() => server.close());
   assert.equal((await fetch("http://127.0.0.1:" + server.address().port + "/api/events")).status, 503);
 });
+
+test("community tags expose activities without overriding specific provider categories", async () => {
+  const tags = ["outdoor", "games", "food-and-beverage", "crafts"];
+  const rows = tags.map(tag => ({ ...item, id: tag, title: "Local activity", tags: [{ kind: "genre", tag }] }));
+  rows.push({ ...rows[3], id: "film", category: "film" });
+  const getEvents = createCommunityCatalog({ clock: () => day, fetchFeed: async () => feed(...rows) });
+  assert.deepEqual((await getEvents()).map(event => event.category), ["Outdoors", "Gaming", "Food", "Arts", "Film"]);
+});
