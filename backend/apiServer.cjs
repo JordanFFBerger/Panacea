@@ -1,6 +1,6 @@
 
 const http = require("node:http");
-const { createCommunityCatalog } = require("./communityCatalog.cjs");
+const { createLiveCatalog } = require("./combinedCatalog.cjs");
 
 const PORT = Number(process.env.API_PORT || 3000);
 const HOST = process.env.API_HOST || "127.0.0.1";
@@ -67,7 +67,7 @@ function filterEvents(events, params) {
   };
 }
 
-function createServer({ getEvents = createCommunityCatalog() } = {}) {
+function createServer({ getEvents = createLiveCatalog() } = {}) {
   const serve = async (req, res) => {
     let url;
 
@@ -96,10 +96,6 @@ function createServer({ getEvents = createCommunityCatalog() } = {}) {
       const validation = filterEvents([], url.searchParams);
       if (validation.error) return sendJson(res, 400, validation);
       const result = filterEvents(await getEvents(), url.searchParams);
-
-      if (result.error) {
-        return sendJson(res, 400, result);
-      }
 
       return sendJson(res, 200, result);
     }
