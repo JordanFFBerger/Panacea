@@ -25,7 +25,9 @@ function normalize(item) {
   const primary = Object.hasOwn(categories, item.category) ? categories[item.category] : "Other";
   const tags = new Set(Array.isArray(item.tags)
     ? item.tags.filter(tag => tag?.kind === "genre").map(tag => tag.tag) : []);
-  const category = ["Community", "Other"].includes(primary)
+  const nightclub = /\bnight[\s-]*club\b/i.test(item.venue.name);
+  const screening = /\b(screening|movie night|film festival|watch party)\b/i.test(title) || tags.has("movies-film");
+  const category = nightclub && !screening ? "Nightclubs" : ["Community", "Other"].includes(primary)
     ? tags.has("book-club") || tags.has("author-event") || /\b(book club|story\s?time)\b/i.test(title) ? "Books"
       : tags.has("outdoor") || tags.has("neighborhood-cleanup") ? "Outdoors"
       : tags.has("games") ? "Gaming"

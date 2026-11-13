@@ -69,3 +69,15 @@ test("community tags expose activities without overriding specific provider cate
   const getEvents = createCommunityCatalog({ clock: () => day, fetchFeed: async () => feed(...rows) });
   assert.deepEqual((await getEvents()).map(event => event.category), ["Outdoors", "Gaming", "Food", "Arts", "Film"]);
 });
+
+test("nightclub venue corrects film classification while real screenings stay in Film", async () => {
+  const venue = { name: "SPLASH NIGHTCLUB" };
+  const rows = [
+    { ...item, id: "pop", title: "Pop Princess", category: "film", venue },
+    { ...item, id: "screening", title: "Midnight Film Screening", category: "film", venue },
+    { ...item, id: "movie", title: "Monday Movie Night", category: "film" },
+    { ...item, id: "dj", title: "Rave Daddy", category: "dj-party", venue }
+  ];
+  const getEvents = createCommunityCatalog({ clock: () => day, fetchFeed: async () => feed(...rows) });
+  assert.deepEqual((await getEvents()).map(event => event.category), ["Nightclubs", "Film", "Film", "Nightclubs"]);
+});
