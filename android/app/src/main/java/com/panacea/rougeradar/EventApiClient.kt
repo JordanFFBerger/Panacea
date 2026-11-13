@@ -54,6 +54,19 @@ object EventApiClient {
             }
         }
 
+    suspend fun fetchEvent(id: String): RemoteEvent = withContext(Dispatchers.IO) {
+        val path = android.net.Uri.encode(id)
+        val connection = URL("$BASE_URL/api/events/$path").openConnection() as HttpURLConnection
+        try {
+            connection.connectTimeout = 5000
+            connection.readTimeout = 5000
+            val json = connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+            parseEvent(JSONObject(json).getJSONObject("event"))
+        } finally {
+            connection.disconnect()
+        }
+    }
+
     internal fun parseEvent(item: JSONObject): RemoteEvent {
 
         fun optionalText(key: String): String? =

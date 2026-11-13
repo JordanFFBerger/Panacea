@@ -1,5 +1,6 @@
 
 const http = require("node:http");
+const { createPriceLookup } = require("./eventPrices.cjs");
 const { createLiveCatalog } = require("./combinedCatalog.cjs");
 
 const PORT = Number(process.env.API_PORT || 3000);
@@ -67,7 +68,7 @@ function filterEvents(events, params) {
   };
 }
 
-function createServer({ getEvents = createLiveCatalog() } = {}) {
+function createServer({ getEvents = createLiveCatalog(), prices = createPriceLookup() } = {}) {
   const serve = async (req, res) => {
     let url;
 
@@ -95,7 +96,7 @@ function createServer({ getEvents = createLiveCatalog() } = {}) {
     if (url.pathname === "/api/events") {
       const validation = filterEvents([], url.searchParams);
       if (validation.error) return sendJson(res, 400, validation);
-      const result = filterEvents(await getEvents(), url.searchParams);
+      const result = filterEvents((await getEvents()).map(prices.cached), url.searchParams);
 
       return sendJson(res, 200, result);
     }
@@ -126,7 +127,7 @@ function createServer({ getEvents = createLiveCatalog() } = {}) {
         });
       }
 
-      return sendJson(res, 200, { event });
+      return sendJson(res, 200, { event: await prices.resolve(event) });
     }
 
     return sendJson(res, 404, {

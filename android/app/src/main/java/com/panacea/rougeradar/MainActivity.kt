@@ -58,6 +58,24 @@ fun RadarApp() {
             )
         }
     }
+    val selectedListing = events.firstOrNull { it.key == selected }?.listing
+    LaunchedEffect(selectedListing) {
+        val listing = selectedListing ?: return@LaunchedEffect
+        if (listing.priceMinUsd != null || listing.ticketUrl == null) return@LaunchedEffect
+        val updated = try {
+            EventApiClient.fetchEvent(listing.id)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            return@LaunchedEffect
+        }
+        if (updated.id == listing.id && updated.priceMinUsd != null) {
+            remoteEvents = remoteEvents.map { event ->
+                if (event.listing?.id == listing.id) updated.toDisplayEvent() else event
+            }
+        }
+    }
+
     fun toggle(id:String,signup:Boolean) {
         val set=if(signup) joined else saved
         val updated=if(id in set) set-id else set+id

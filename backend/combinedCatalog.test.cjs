@@ -48,3 +48,18 @@ test("a matched show gets known pricing without hiding different showtimes", asy
   });
   assert.deepEqual((await getEvents()).map(e => [e.id, e.priceMinUsd]), [["matinee", 15], ["community", 20]]);
 });
+
+test("published price matches the specific showtime and ignores unavailable or foreign offers", () => {
+  const { listedPrice } = require("./eventPrices.cjs");
+  const startDate = "2026-11-14T01:30:00Z";
+  const html = "<script type='application/ld+json'>" + JSON.stringify([
+    { "@type": "MusicEvent", startDate: "2026-11-14T20:00:00Z", offers: { price: "1", priceCurrency: "USD" } },
+    { "@type": "MusicEvent", startDate, offers: [
+      { price: "5", priceCurrency: "CAD" },
+      { price: "10", priceCurrency: "USD", availability: "https://schema.org/SoldOut" },
+      { lowPrice: "31.51", priceCurrency: "USD" }
+    ] }
+  ]) + "</script>";
+  assert.equal(listedPrice(html, "2026-11-13T19:30:00-06:00"), 31.51);
+  assert.equal(listedPrice(html, "2026-11-15T19:30:00-06:00"), null);
+});
