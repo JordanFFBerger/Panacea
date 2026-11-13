@@ -91,7 +91,8 @@ object EventApiClient {
             sourceUrls = sourceUrls,
             checkedDate = optionalText("checkedDate"),
             sourceName = optionalText("sourceName"),
-            listingUrl = optionalText("listingUrl")
+            listingUrl = optionalText("listingUrl"),
+            imageUrl = optionalText("imageUrl")
         )
     }
 }

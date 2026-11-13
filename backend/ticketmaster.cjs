@@ -40,6 +40,10 @@ function normalize(event, now) {
   const categories = { Music: "Music", Sports: "Sports", "Arts & Theatre": "Arts", Film: "Film" };
   const end = Date.parse(event.dates.end?.dateTime);
   const ticketUrl = httpsUrl(event.url);
+  const images = Array.isArray(event.images) ? event.images : [];
+  const cover = images.filter(image => image?.fallback === false && httpsUrl(image.url))
+    .sort((a, b) => Number(b.ratio === "16_9") - Number(a.ratio === "16_9") ||
+      Math.abs((a.width ?? 0) - 800) - Math.abs((b.width ?? 0) - 800))[0];
   return {
     id: "ticketmaster:" + id, title, category: Object.hasOwn(categories, segment) ? categories[segment] : "Other",
     venue: venue.name.trim(), startLocal, endLocal: hasTime && end >= instant ? toLocal(end) : null,
@@ -47,7 +51,7 @@ function normalize(event, now) {
     address: [venue.address?.line1, venue.city?.name, venue.state?.stateCode, venue.postalCode].map(clean).filter(Boolean).join(", ") || null,
     description: clean(event.info) ?? clean(event.pleaseNote),
     priceMinUsd: prices.length ? Math.min(...prices) : null,
-    ticketUrl, ageRestriction: null,
+    ticketUrl, imageUrl: cover?.url ?? null, ageRestriction: null,
     latitude: coordinate(venue.location?.latitude, 90), longitude: coordinate(venue.location?.longitude, 180),
     sourceUrls: ticketUrl ? [ticketUrl] : [], listingUrl: ticketUrl, sourceName: "Ticketmaster", checkedDate: toLocal(now).slice(0, 10)
   };

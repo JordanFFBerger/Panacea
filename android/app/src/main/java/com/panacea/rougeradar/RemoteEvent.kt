@@ -19,5 +19,6 @@ data class RemoteEvent(
     val sourceUrls: List<String>,
     val checkedDate: String?,
     val sourceName: String? = null,
-    val listingUrl: String? = null
+    val listingUrl: String? = null,
+    val imageUrl: String? = null
 )

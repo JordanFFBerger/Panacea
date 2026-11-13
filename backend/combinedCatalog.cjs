@@ -33,7 +33,7 @@ function createCombinedCatalog({ community = createCommunityCatalog(), ticketmas
           normalizedTitle(event.title) !== normalizedTitle(match.title)) return event;
       used.add(match.id);
       return { ...match, ...event,
-        description: event.description ?? match.description,
+        imageUrl: event.imageUrl ?? match.imageUrl, description: event.description ?? match.description,
         address: event.address ?? match.address,
         latitude: event.latitude ?? match.latitude, longitude: event.longitude ?? match.longitude,
         priceMinUsd: event.priceMinUsd ?? match.priceMinUsd,

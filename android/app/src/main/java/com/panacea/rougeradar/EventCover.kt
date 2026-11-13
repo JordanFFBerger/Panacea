@@ -11,23 +11,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun EventCover(event: Event, modifier: Modifier = Modifier) {
-    val photo = when (event.category) {
-        "Music" -> R.drawable.cover_music
-        "Books" -> R.drawable.cover_books
-        "Food" -> R.drawable.cover_food
-        "Arts" -> R.drawable.cover_arts
-        "Gaming" -> R.drawable.cover_gaming
-        "Outdoors" -> R.drawable.cover_outdoors
-        else -> null
+    val artwork by androidx.compose.runtime.produceState<androidx.compose.ui.graphics.ImageBitmap?>(
+        null, event.listing
+    ) {
+        value = null
+        value = event.listing?.let { loadEventArtwork(it) }
     }
     Box(modifier.background(MaterialTheme.colorScheme.secondaryContainer)) {
-        if (photo != null) {
-            Image(painterResource(photo), contentDescription = null,
+        artwork?.let { bitmap ->
+            Image(bitmap, contentDescription = null,
                 modifier = Modifier.matchParentSize(), contentScale = ContentScale.Crop)
             Box(Modifier.matchParentSize().background(
                 Brush.verticalGradient(listOf(Color.Transparent, Color(0xB8001820)), startY = 35f)
