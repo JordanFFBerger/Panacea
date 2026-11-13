@@ -46,7 +46,12 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
         if(tab=="Discover") item { RiverHero(onPick = if (filtered.isEmpty()) null else ({ onOpen(filtered.random().key) })) }
         item { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved Events";else->"Around the Red Stick"},modifier=if(tab=="Saved") Modifier.fillMaxWidth() else Modifier,textAlign=if(tab=="Saved") androidx.compose.ui.text.style.TextAlign.Center else androidx.compose.ui.text.style.TextAlign.Start,style=MaterialTheme.typography.headlineSmall)
-            Text(if(tab=="Saved") "Local guest · events saved on this device" else catalogStatus,style=MaterialTheme.typography.labelMedium)
+            Text(
+                text = if (tab == "Saved") "Local guest · events saved on this device" else catalogStatus,
+                modifier = if (tab == "Saved") Modifier.fillMaxWidth() else Modifier,
+                textAlign = if (tab == "Saved") androidx.compose.ui.text.style.TextAlign.Center else androidx.compose.ui.text.style.TextAlign.Start,
+                style = MaterialTheme.typography.labelMedium
+            )
             onRetry?.let { OutlinedButton(shape=RectangleShape,onClick=it) { Text("Retry event feed") } }
             if(tab=="Nearby" && sort=="Distance") Text("Known distances first. Check the event for venue information.",style=MaterialTheme.typography.bodySmall)
         } }
