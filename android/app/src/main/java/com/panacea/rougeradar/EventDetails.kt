@@ -25,8 +25,13 @@ fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()-
         if (e.description.isNotBlank()) Text(e.description)
         e.listing?.address?.let { Text(it) }
         e.listing?.ageRestriction?.let { Text(it) }
+        e.track?.let { EventListeningRoom(it) }
+        if (e.category == "Music" && !e.isSample) {
+            val recording = artistRecording(e.title)
+            if (recording != null) EventLink("Listen: " + recording.first + " ↗", recording.second)
+            else Text("No artist preview available for this event.",style=MaterialTheme.typography.bodySmall)
+        }
         if (e.isSample) {
-            e.track?.let { EventListeningRoom(it) }
             HorizontalDivider()
             Text("What's included",style=MaterialTheme.typography.titleMedium)
             e.activities.forEach { Text("✓ $it") }
