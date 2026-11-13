@@ -30,6 +30,7 @@ fun RadarApp() {
     var mode by remember { mutableStateOf(prefs.getString("theme","Auto") ?: "Auto") }
     var saved by remember { mutableStateOf(prefs.getStringSet("saved",emptySet())!!.toSet()) }
     var joined by remember { mutableStateOf(prefs.getStringSet("joined",emptySet())!!.toSet()) }
+    var attendance by remember { mutableStateOf(readAttendance(prefs.getString("attendance", null))) }
     var tab by rememberSaveable { mutableStateOf("Discover") }
     var selected by rememberSaveable { mutableStateOf<String?>(null) }
     var remoteEvents by remember { mutableStateOf<List<Event>>(emptyList()) }
@@ -82,6 +83,12 @@ fun RadarApp() {
         if(signup) joined=updated else saved=updated
         prefs.edit().putStringSet(if(signup) "joined" else "saved",updated).apply()
     }
+    fun toggleAttendance(listing: RemoteEvent) {
+        attendance = if (listing.id in attendance) attendance - listing.id
+            else attendance + (listing.id to listing)
+        prefs.edit().putString("attendance", writeAttendance(attendance.values)).apply()
+    }
+
     RadarTheme(mode) {
         BackHandler(selected!=null) { selected=null }
         Scaffold(topBar={ Surface { Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal=16.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
@@ -99,8 +106,18 @@ fun RadarApp() {
         } } }) { padding ->
             Box(Modifier.fillMaxSize().padding(padding)) {
                 if (tab == "Discover" && selected == null) DiscoverBackdrop(Modifier.matchParentSize())
-                val event=events.find { it.key==selected }
-                if(event!=null) EventDetails(event,event.key in saved,event.key in joined,{selected=null},{toggle(event.key,false)},{toggle(event.key,true)})
+                val event = events.find { it.key == selected }
+                    ?: attendance.values.firstOrNull { "catalog:" + it.id == selected }?.toDisplayEvent()
+                if (event != null) {
+                    val listing = event.listing
+                    EventDetails(event, event.key in saved, event.key in joined,
+                        { selected = null }, { toggle(event.key, false) }, { toggle(event.key, true) },
+                        attended = listing?.id in attendance,
+                        onAttendance = listing?.let { { toggleAttendance(it) } })
+                } else if (tab == "Profile") {
+                    AttendanceProfile(attendance.values.map { it.toDisplayEvent() }, saved,
+                        onOpen = { selected = it }, onSave = { toggle(it, false) })
+                }
                 else discoveryState.SaveableStateProvider(tab) {
                     EventDiscovery(events,catalogStatus,tab,saved,joined,{selected=it},{toggle(it,false)},if(catalogFailed) ({ refresh++ }) else null)
                 }

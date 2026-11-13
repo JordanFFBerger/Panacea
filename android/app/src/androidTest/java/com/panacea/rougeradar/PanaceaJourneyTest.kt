@@ -65,15 +65,33 @@ class PanaceaJourneyTest {
         assertNull(event.checkedDate)
     }
 
-    @Test fun savedEventAppearsInProfileAndSurvivesActivityRecreation() {
+    @Test fun savedEventAppearsInSavedAndSurvivesActivityRecreation() {
         openEvent("Mariachi", "Mariachi Herencia")
         app.onNodeWithText("♡ Save for later").performScrollTo().performClick()
-        app.onNodeWithText("Profile").performClick()
+        app.onNodeWithText("Saved").performClick()
         app.onNodeWithText("Saved Events").assertIsDisplayed()
         awaitEvent("Mariachi Herencia")
         app.activityRule.scenario.recreate()
         awaitEvent("Mariachi Herencia")
         app.onNodeWithText("Mariachi Herencia", substring = true).assertIsDisplayed()
+    }
+
+    @Test fun attendanceIsSeparateFromSavingAndSurvivesRecreation() {
+        openEvent("Mariachi", "Mariachi Herencia")
+        app.onNodeWithText("♡ Save for later").performScrollTo().performClick()
+        app.onNodeWithText("Profile").performClick()
+        app.onNodeWithText("Mariachi Herencia", substring = true).assertDoesNotExist()
+        app.onNodeWithText("Saved").performClick()
+        awaitEvent("Mariachi Herencia")
+        app.onNodeWithText("Mariachi Herencia", substring = true).performClick()
+        app.onNodeWithText("I went!").performScrollTo().performClick()
+        app.onNodeWithText("Profile").performClick()
+        app.activityRule.scenario.recreate()
+        awaitEvent("Mariachi Herencia")
+        app.onNodeWithText("Mariachi Herencia", substring = true).performClick()
+        app.onNodeWithText("✓ I went! · Undo").performScrollTo().performClick()
+        app.onNodeWithText("Profile").performClick()
+        app.onNodeWithText("Mariachi Herencia", substring = true).assertDoesNotExist()
     }
 
     @Test fun explicitThemeSurvivesActivityRecreation() {

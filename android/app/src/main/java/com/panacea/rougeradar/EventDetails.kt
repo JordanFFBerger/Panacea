@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()->Unit,onJoin:()->Unit) {
+fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()->Unit,onJoin:()->Unit, attended: Boolean, onAttendance: (() -> Unit)?) {
     val context=LocalContext.current
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onBack) { Text("← Back to events") }
@@ -55,6 +55,12 @@ fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()-
         if (ticketUrl != null) EventLink("Organizer tickets ↗", ticketUrl)
         val listingUrl = e.listing?.listingUrl?.takeIf { Uri.parse(it).scheme == "https" }
         if (listingUrl != null && listingUrl != ticketUrl) EventLink("View original listing ↗", listingUrl)
+        if (onAttendance != null) {
+            OutlinedButton(shape = androidx.compose.ui.graphics.RectangleShape,
+                modifier = Modifier.fillMaxWidth(), onClick = onAttendance) {
+                Text(if (attended) "✓ I went! · Undo" else "I went!")
+            }
+        }
         if (e.listing?.sourceName == "Has Things") Text("Data: Has Things (hasthings.com)",style=MaterialTheme.typography.bodySmall)
         TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={
             val share=Intent(Intent.ACTION_SEND).apply { type="text/plain";putExtra(Intent.EXTRA_TEXT,"${e.title}\n${e.dateLabel} ${e.time} · ${e.priceLabel}\n${e.venue}" + if (e.isSample) "\nFictional sample event; no actual reservation." else "") }
