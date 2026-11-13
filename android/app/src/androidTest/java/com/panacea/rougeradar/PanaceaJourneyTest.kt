@@ -22,31 +22,36 @@ class PanaceaJourneyTest {
         app.activityRule.scenario.recreate()
     }
 
-    private fun openJazz() {
-        app.onNodeWithTag("event-list").performScrollToNode(hasText("Jazz under the stars"))
-        app.onNodeWithText("Jazz under the stars").performClick()
-        app.onNodeWithText("Jazz under the stars").assertIsDisplayed()
+    private fun openEvent(query: String, title: String) {
+        val list = app.onNodeWithTag("event-list")
+        list.performScrollToNode(hasTestTag("event-search"))
+        app.onNodeWithTag("event-search").performTextInput(query)
+        app.onNodeWithTag("event-search").performImeAction()
+        awaitEvent(title)
+        app.onNodeWithText(title, substring = true).performClick()
     }
 
-    @Test fun searchOpensEventAndShowsPriceAndActivities() {
-        app.onNodeWithTag("event-list").performScrollToNode(hasTestTag("event-search"))
-        app.onNodeWithTag("event-search").performTextInput("chapter")
-        app.onNodeWithTag("event-search").performImeAction()
-        app.onNodeWithTag("event-list").performScrollToNode(hasText("One more chapter"))
-        app.onNodeWithText("One more chapter").performClick()
-        app.onNodeWithText("Free").assertIsDisplayed()
-        app.onNodeWithText("✓ Book discussion").performScrollTo().assertIsDisplayed()
+    private fun awaitEvent(title: String) {
+        app.waitUntil(15_000) {
+            try {
+                app.onNodeWithTag("event-list").performScrollToNode(hasText(title, substring = true))
+                true
+            } catch (_: AssertionError) {
+                false
+            }
+        }
+    }
+
+    @Test fun searchOpensFreeEvent() {
+        openEvent("white light", "White Light Night")
+        app.onNodeWithText("Free").performScrollTo().assertIsDisplayed()
     }
 
     @Test fun returningFromDetailsPreservesSearch() {
-        app.onNodeWithTag("event-list").performScrollToNode(hasTestTag("event-search"))
-        app.onNodeWithTag("event-search").performTextInput("chapter")
-        app.onNodeWithTag("event-search").performImeAction()
-        app.onNodeWithTag("event-list").performScrollToNode(hasText("One more chapter"))
-        app.onNodeWithText("One more chapter").performClick()
+        openEvent("Mariachi", "Mariachi Herencia")
         app.onNodeWithText("← Back to events").performClick()
         app.onNodeWithTag("event-list").performScrollToNode(hasTestTag("event-search"))
-        app.onNodeWithTag("event-search").assertTextContains("chapter")
+        app.onNodeWithTag("event-search").assertTextContains("Mariachi")
     }
 
     @Test fun catalogParserAcceptsMissingCheckedDate() {
@@ -61,24 +66,12 @@ class PanaceaJourneyTest {
     }
 
     @Test fun savingSurvivesActivityRecreation() {
-        openJazz()
+        openEvent("Mariachi", "Mariachi Herencia")
         app.onNodeWithText("♡ Save for later").performScrollTo().performClick()
         app.onNodeWithText("Saved").performClick()
         app.activityRule.scenario.recreate()
-        app.onNodeWithTag("event-list").performScrollToNode(hasText("Jazz under the stars"))
-        app.onNodeWithText("Jazz under the stars").assertIsDisplayed()
-    }
-
-    @Test fun signupAppearsInProfileAndCanBeUndone() {
-        openJazz()
-        app.onNodeWithText("Count me in · demo signup").performScrollTo().performClick()
-        app.onNodeWithText("Profile").performClick()
-        app.onNodeWithTag("event-list").performScrollToNode(hasText("Jazz under the stars"))
-        app.onNodeWithText("Jazz under the stars").performClick()
-        app.onNodeWithText("✓ On the demo list · undo").performScrollTo().performClick()
-        app.onNodeWithText("Profile").performClick()
-        app.onNodeWithTag("event-list").performScrollToNode(hasText("A little quiet here."))
-        app.onNodeWithText("A little quiet here.").assertIsDisplayed()
+        awaitEvent("Mariachi Herencia")
+        app.onNodeWithText("Mariachi Herencia", substring = true).assertIsDisplayed()
     }
 
     @Test fun explicitThemeSurvivesActivityRecreation() {
@@ -100,30 +93,14 @@ class PanaceaJourneyTest {
         app.onNodeWithText("Theoi Project ↗").assertDoesNotExist()
     }
 
-    @Test fun listeningRoomPlaysAndPausesTheBundledTrack() {
-        openJazz()
-        app.onNodeWithText("On the Cool Side").performScrollTo().assertIsDisplayed()
-        app.onNodeWithText("Kevin MacLeod").performScrollTo().assertIsDisplayed()
-        app.onNodeWithText("Play preview").performScrollTo().performClick()
-        app.onNodeWithTag("preview-progress").performScrollTo().assertIsDisplayed()
-        app.onNodeWithText("Pause preview").performScrollTo().performClick()
-        app.onNodeWithText("Play preview").assertIsDisplayed()
-    }
     @Test fun fetchedCatalogEventAppearsInDiscoverAndOpensDetails() {
-        app.onNodeWithTag("event-list").performScrollToNode(hasTestTag("event-search"))
-        app.onNodeWithTag("event-search").performTextInput("Mariachi Herencia")
-        app.onNodeWithTag("event-search").performImeAction()
-        app.waitUntil(15_000) {
-            app.onAllNodesWithText("Baton Rouge event catalog and demo listings").fetchSemanticsNodes().isNotEmpty()
-        }
-        app.onNodeWithTag("event-list").performScrollToNode(hasText("Mariachi Herencia", substring = true))
-        app.onNodeWithText("Mariachi Herencia", substring = true).performClick()
+        openEvent("Mariachi Herencia", "Mariachi Herencia")
         app.onNodeWithText("From $20.00").performScrollTo().assertIsDisplayed()
         app.onNodeWithText("Organizer tickets ↗").performScrollTo().assertIsDisplayed()
         app.onNodeWithText("Count me in · demo signup").assertDoesNotExist()
     }
 
-    @Test fun androidClientReadsRealEventsFromTheRunningBackend() = runBlocking {
+    @Test fun androidClientReadsFixturesOverHttpFromTheRunningBackend() = runBlocking {
         val events = EventApiClient.fetchEvents()
         assertTrue(events.any { it.id == "mariachi-heritage-2026" && it.priceMinUsd == 20.0 })
         assertTrue(events.any { it.id == "white-light-night-2026" && it.priceMinUsd == 0.0 })

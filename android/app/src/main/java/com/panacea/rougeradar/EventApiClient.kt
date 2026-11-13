@@ -89,7 +89,9 @@ object EventApiClient {
             latitude = optionalNumber("latitude"),
             longitude = optionalNumber("longitude"),
             sourceUrls = sourceUrls,
-            checkedDate = optionalText("checkedDate")
+            checkedDate = optionalText("checkedDate"),
+            sourceName = optionalText("sourceName"),
+            listingUrl = optionalText("listingUrl")
         )
     }
 }

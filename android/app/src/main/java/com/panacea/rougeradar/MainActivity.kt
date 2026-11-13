@@ -34,18 +34,23 @@ fun RadarApp() {
     var selected by rememberSaveable { mutableStateOf<String?>(null) }
     var remoteEvents by remember { mutableStateOf<List<Event>>(emptyList()) }
     var catalogStatus by remember { mutableStateOf("Loading event catalog…") }
-    val events = remoteEvents + SampleEvents.all
+    val events = remoteEvents
+    var refresh by remember { mutableIntStateOf(0) }
+    var catalogFailed by remember { mutableStateOf(false) }
     val discoveryState = rememberSaveableStateHolder()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refresh) {
+        catalogFailed = false
+        catalogStatus = "Loading event catalog…"
         try {
             remoteEvents = EventApiClient.fetchEvents().distinctBy { it.id }.map { it.toDisplayEvent() }
-            catalogStatus = if (remoteEvents.isEmpty()) "No catalog events · demo listings available"
-                            else "Baton Rouge event catalog and demo listings"
+            catalogStatus = if (remoteEvents.isEmpty()) "No upcoming events from our sources"
+                            else "Baton Rouge event catalog"
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (error: Exception) {
-            catalogStatus = "Event catalog unavailable · showing demo listings"
+            catalogFailed = true
+            catalogStatus = "Unable to load events. Check your connection and try again."
             android.util.Log.e(
                 "PanaceaAPI",
                 "Failed to load events",
@@ -79,7 +84,7 @@ fun RadarApp() {
                 val event=events.find { it.key==selected }
                 if(event!=null) EventDetails(event,event.key in saved,event.key in joined,{selected=null},{toggle(event.key,false)},{toggle(event.key,true)})
                 else discoveryState.SaveableStateProvider(tab) {
-                    EventDiscovery(events,catalogStatus,tab,saved,joined,{selected=it},{toggle(it,false)})
+                    EventDiscovery(events,catalogStatus,tab,saved,joined,{selected=it},{toggle(it,false)},if(catalogFailed) ({ refresh++ }) else null)
                 }
             }
         }

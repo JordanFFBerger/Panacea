@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<String>,joined:Set<String>,onOpen:(String)->Unit,onSave:(String)->Unit) {
+fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<String>,joined:Set<String>,onOpen:(String)->Unit,onSave:(String)->Unit,onRetry:(()->Unit)? = null) {
     val focusManager = LocalFocusManager.current
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("All") }
@@ -47,6 +47,7 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
         item { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved for a good day";"Profile"->"Your next good stories";else->"Around the Red Stick"},style=MaterialTheme.typography.headlineSmall)
             Text(if(tab=="Profile") "Local guest · plans saved on this device" else catalogStatus,style=MaterialTheme.typography.labelMedium)
+            onRetry?.let { OutlinedButton(shape=RectangleShape,onClick=it) { Text("Retry event feed") } }
             if(tab=="Nearby" && sort=="Distance") Text("Known distances first. Check the event for venue information.",style=MaterialTheme.typography.bodySmall)
         } }
         item { OutlinedTextField(value=query,onValueChange={query=it},label={Text("Search events, activities, places")},singleLine=true,modifier=Modifier.fillMaxWidth().testTag("event-search"),shape=RectangleShape,
@@ -58,17 +59,22 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
         item { Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
             FilterMenu(period,listOf("Any date","This week","Weekend"),Modifier.weight(1f)){period=it}
             FilterMenu(price,listOf("Any price","Free","Under $25"),Modifier.weight(1f)){price=it}
-            FilterMenu(sort, if (tab == "Nearby") listOf("Distance","Soonest","Trending","Price") else listOf("Soonest","Trending","Price"),Modifier.weight(1f)){sort=it}
+            FilterMenu(sort, if (tab == "Nearby") listOf("Distance","Soonest","Price") else listOf("Soonest","Price"),Modifier.weight(1f)){sort=it}
         } }
         if (tab == "Profile") item { PhotoCredits() }
         item { Text("${filtered.size} events",style=MaterialTheme.typography.labelSmall) }
         if(filtered.isEmpty()) item { Column(Modifier.padding(vertical=24.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("A little quiet here.",style=MaterialTheme.typography.titleLarge)
-            Text(if(tab=="Saved") "Save an event from Discover to find it here." else if(tab=="Profile") "Demo signups appear here. No real reservation is made." else "Try another search or filter.")
+            Text(if(tab=="Saved") "Save an event from Discover to find it here." else if(tab=="Profile") "Plans appear here when signups are available." else "Try another search or filter.")
             OutlinedButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={query="";category="All";price="Any price";period="Any date"}) { Text("Reset filters") }
         } }
         items(filtered,key={it.key}) { e -> EventCard(e,e.key in saved,e.key in joined,tab=="Nearby",{onOpen(e.key)},{onSave(e.key)}) }
-        item { Text("Demo listings are fictional. Check with organizers for catalog event details.",style=MaterialTheme.typography.bodySmall) }
+        if (events.any { it.listing?.sourceName == "Has Things" }) item {
+            val context = androidx.compose.ui.platform.LocalContext.current
+            TextButton(shape=RectangleShape,onClick={ context.openEventUrl("https://hasthings.com") }) {
+                Text("Data: Has Things (hasthings.com)")
+            }
+        }
     }
 }
 
@@ -86,7 +92,7 @@ fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Uni
     OutlinedCard(modifier=Modifier.fillMaxWidth().clickable(onClick=onOpen),shape=RectangleShape) {
         EventCover(e, Modifier.fillMaxWidth().height(132.dp))
         Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondaryContainer).padding(start=18.dp,end=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-            Text(if(e.track != null) "♫  In-app listening room" else if(e.isSample) "✦  Demo listing" else "✦  Catalog event",style=MaterialTheme.typography.labelMedium)
+            Text(if(e.track != null) "♫  In-app listening room" else if(e.isSample) "✦  Demo listing" else e.listing?.sourceName ?: "✦  Catalog event",style=MaterialTheme.typography.labelMedium)
             TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick=onSave) { Text(if(saved) "♥ Unsave" else "♡ Save") }
         }
         Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
@@ -96,8 +102,8 @@ fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Uni
             }
             Text(e.title,style=MaterialTheme.typography.titleLarge)
             Text("${e.time} · ${e.venue}",style=MaterialTheme.typography.bodySmall)
-            Text(e.activities.joinToString(" · "),style=MaterialTheme.typography.bodyMedium)
-            HorizontalDivider()
+            if(e.activities.isNotEmpty()) Text(e.activities.joinToString(" · "),style=MaterialTheme.typography.bodyMedium)
+            if(e.isSample) HorizontalDivider()
             if(e.isSample) Text("${if(e.trending) "↗ Trending" else "Gathering good company"} · ${e.signups+if(joined) 1 else 0} signed up",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.primary)
             if(nearby && e.miles != null) Text("${e.miles} mi · Sample distance",style=MaterialTheme.typography.labelSmall)
         }

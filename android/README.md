@@ -1,6 +1,6 @@
 # Panacea — native Android app
 
-Kotlin + Jetpack Compose. This is an installable Android app, with no WebView and no web server.
+Kotlin + Jetpack Compose. This is an installable Android app, with no WebView. The event feed uses the Panacea API.
 
 ## Open and run
 
@@ -11,29 +11,24 @@ APK output: `app/build/outputs/apk/debug/app-debug.apk`. Android Studio supplies
 
 ## Native features
 
-- Discover cards show admission price, date/time, venue, activities and sample signup counts immediately. Tap once for the full summary.
-- Search by name, activity, category or venue; filter by category/date/price and sort by date, price or recent signups.
-- Saved events and demo plans persist on the device. Device Back returns from an event to discovery.
-- Nearby lists events by illustrative distance with links to their sample area on OpenStreetMap. It does not request location access.
-- Android share sheet for event summaries.
-- Day: aqua and green gradients, luminous sky and river. Night: midnight teal, brass accents and serif hero type. All buttons use square corners.
-- Auto theme follows America/Chicago: day 7am–6pm; night otherwise, checked every minute. Tap the theme control for Auto → Day → Night.
-- Trending requires at least 20 signups in 24 hours and at least 50% growth over the previous 24 hours. Boundary tests cover this rule.
-
-## Prototype boundary
-
-Events, prices, coordinates, distances, dates and signup counts are fictional fixtures. Dates are relative to today in Baton Rouge. Signups are local demonstrations, not reservations; no payments or actual tickets. This skeleton has no server or login. The nearby page is a distance list with external area maps, not a live in-app map.
-
-Android loads the backend event catalog and displays its entries alongside labeled demo listings. Move authenticated, deduplicated signup counts and rolling trending calculations to a backend before real use. Connect verified organizer ticket links, and add a geographic map provider if needed.
+- Discover cards show price, date/time and venue. Tap once for details and the original listing when available.
+- Search and filter by category, date and price. Saved events persist on the device.
+- Nearby shows the catalog with distances first when available. Panacea does not request your location.
+- Day uses aqua and green; night uses midnight teal and brass. Auto follows Baton Rouge time. Buttons have square corners.
+- Live listings do not include verified signup totals or recordings. Panacea does not infer popularity from provider rankings.
 
 The repository root's `app/` directory contains the earlier browser design reference. The Android application lives entirely here.
 
 The Discover hero features a cropped portrait of the draped Panakeia statue at the Archaeological Museum of Dion and a **Pick a cure for me** button that chooses an event from the current filters. Event cards and details display human-made, offline cover photos. See the [photo credits and license links](PHOTO-CREDITS.md).
 
-Music details offer an offline Listening Room. The fictional jazz event features [On the Cool Side](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100124) by Kevin MacLeod (incompetech.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The original MP3 is bundled unchanged.
-
 Discover uses a credited Baton Rouge photograph for each color theme. **Meet Panacea** displays a verbatim excerpt from the [Theoi Project](https://www.theoi.com/Ouranios/AsklepiasPanakeia.html) followed by the app's boredom line in the `panacea_boredom_note` string in `app/src/main/res/values/strings.xml`.
 
 ## Android event catalog
 
-Start the API from the repository root with `node backend/apiServer.cjs`. Emulator debug builds use `http://10.0.2.2:3000`. To connect a physical phone, host the API at a reachable HTTPS address and build with `-PpanaceaApiUrl=https://your-api.example`. A release build needs that setting to load the catalog. Without a reachable API, Android shows the demo listings and an unavailable message.
+1. From the repository root, run `node backend/apiServer.cjs` (Node 20+). The [Baton Rouge Has Things JSON feed](https://baton-rouge.hasthings.com/feeds) works without credentials and includes publicly advertised shows, library programs and community events.
+2. Optionally set `TICKETMASTER_API_KEY` in the server environment before startup to add listings within 25 miles of downtown Baton Rouge. The API key stays on the server.
+3. Emulator debug builds use `http://10.0.2.2:3000`. For a physical phone, host the API behind a reachable HTTPS endpoint and build with `-PpanaceaApiUrl=https://your-api.example`. Set `API_HOST=0.0.0.0` if your hosting environment requires it. This repository does not configure a production endpoint.
+
+Prices are shown when the provider supplies them, the listing advertises free admission, or it is an eligible library program. Other listings show **Price not listed**. The backend refreshes each feed after 15 minutes on demand. CI uses fixtures and does not depend on live providers.
+
+Data: [Has Things (hasthings.com)](https://hasthings.com), [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). Library program information: [East Baton Rouge Parish Library](https://www.ebrpl.com/events-classes/).

@@ -48,9 +48,12 @@ fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()-
         val ticketUrl = e.listing?.ticketUrl?.takeIf { Uri.parse(it).scheme == "https" }
         if (mapUrl != null) EventLink("Open in Maps ↗", mapUrl)
         if (ticketUrl != null) EventLink("Organizer tickets ↗", ticketUrl)
+        val listingUrl = e.listing?.listingUrl?.takeIf { Uri.parse(it).scheme == "https" }
+        if (listingUrl != null && listingUrl != ticketUrl) EventLink("View original listing ↗", listingUrl)
+        if (e.listing?.sourceName == "Has Things") Text("Data: Has Things (hasthings.com)",style=MaterialTheme.typography.bodySmall)
         TextButton(shape=androidx.compose.ui.graphics.RectangleShape,onClick={
             val share=Intent(Intent.ACTION_SEND).apply { type="text/plain";putExtra(Intent.EXTRA_TEXT,"${e.title}\n${e.dateLabel} ${e.time} · ${e.priceLabel}\n${e.venue}" + if (e.isSample) "\nFictional sample event; no actual reservation." else "") }
-            context.startActivity(Intent.createChooser(share,"Share sample event"))
+            context.startActivity(Intent.createChooser(share,"Share event"))
         }) { Text("Share event summary") }
         if (e.isSample) Text("Demo only. No ticket is issued, no payment is collected, and listings are fictional. Optional purchases may cost extra.",style=MaterialTheme.typography.bodySmall)
     }
