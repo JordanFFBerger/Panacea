@@ -9,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -27,7 +26,6 @@ private fun timeLabel(ms: Int): String {
 @Composable
 fun EventListeningRoom(track: EventTrack) {
     val context = LocalContext.current
-    val uriHandler = LocalUriHandler.current
     var player by remember(track) { mutableStateOf<MediaPlayer?>(null) }
     var playing by remember(track) { mutableStateOf(false) }
     var elapsed by remember(track) { mutableIntStateOf(0) }
@@ -124,8 +122,8 @@ fun EventListeningRoom(track: EventTrack) {
             }, shape = RectangleShape) { Text(if (playing) "Pause preview" else "Play preview") }
             if (failed) Text("The preview could not play. Tap Play preview to retry.", style = MaterialTheme.typography.bodySmall)
             Row {
-                TextButton(onClick = { uriHandler.openUri(track.sourceUrl) }, shape = RectangleShape) { Text("Incompetech ↗") }
-                TextButton(onClick = { uriHandler.openUri("https://creativecommons.org/licenses/by/4.0/") },
+                TextButton(onClick = { context.openEventUrl(track.sourceUrl) }, shape = RectangleShape) { Text("Incompetech ↗") }
+                TextButton(onClick = { context.openEventUrl("https://creativecommons.org/licenses/by/4.0/") },
                     shape = RectangleShape) { Text("CC BY 4.0") }
             }
         }

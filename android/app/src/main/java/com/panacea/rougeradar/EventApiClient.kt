@@ -54,7 +54,7 @@ object EventApiClient {
             }
         }
 
-    private fun parseEvent(item: JSONObject): RemoteEvent {
+    internal fun parseEvent(item: JSONObject): RemoteEvent {
 
         fun optionalText(key: String): String? =
             if (item.isNull(key)) null

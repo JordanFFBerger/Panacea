@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import kotlinx.coroutines.CancellationException
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ fun RadarApp() {
     var remoteEvents by remember { mutableStateOf<List<Event>>(emptyList()) }
     var catalogStatus by remember { mutableStateOf("Loading event catalog…") }
     val events = remoteEvents + SampleEvents.all
+    val discoveryState = rememberSaveableStateHolder()
 
     LaunchedEffect(Unit) {
         try {
@@ -76,10 +78,10 @@ fun RadarApp() {
                 if (tab == "Discover" && selected == null) DiscoverBackdrop(Modifier.matchParentSize())
                 val event=events.find { it.key==selected }
                 if(event!=null) EventDetails(event,event.key in saved,event.key in joined,{selected=null},{toggle(event.key,false)},{toggle(event.key,true)})
-                else EventDiscovery(events,catalogStatus,tab,saved,joined,{selected=it},{toggle(it,false)})
+                else discoveryState.SaveableStateProvider(tab) {
+                    EventDiscovery(events,catalogStatus,tab,saved,joined,{selected=it},{toggle(it,false)})
+                }
             }
         }
     }
 }
-
-

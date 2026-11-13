@@ -28,7 +28,7 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
     var category by rememberSaveable { mutableStateOf("All") }
     var period by rememberSaveable { mutableStateOf("Any date") }
     var price by rememberSaveable { mutableStateOf("Any price") }
-    var sort by rememberSaveable { mutableStateOf("Soonest") }
+    var sort by rememberSaveable { mutableStateOf(if (tab == "Nearby") "Distance" else "Soonest") }
     val today = java.time.LocalDate.now(java.time.ZoneId.of("America/Chicago"))
     val filtered=events.filter { e ->
         (tab!="Saved" || e.key in saved) && (tab!="Profile" || e.key in joined) &&
@@ -36,13 +36,18 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
         (query.isBlank() || "${e.title} ${e.venue} ${e.category} ${e.activities.joinToString()}".contains(query,true)) &&
         (price!="Free" || e.amount==0.0) && (price!="Under $25" || (e.amount?.let { it < 25.0 } == true)) &&
         (period!="This week" || e.date in today..today.plusDays(7)) && (period!="Weekend" || e.date.dayOfWeek.value>=6)
-    }.let { list -> when { tab=="Nearby"->list.sortedBy { it.miles ?: Double.POSITIVE_INFINITY };sort=="Trending"->list.sortedByDescending { it.recent };sort=="Price"->list.sortedBy { it.amount ?: Double.POSITIVE_INFINITY };else->list.sortedBy { it.date } } }
+    }.let { list -> when (sort) {
+        "Distance" -> list.sortedBy { it.miles ?: Double.POSITIVE_INFINITY }
+        "Trending" -> list.sortedByDescending { it.recent }
+        "Price" -> list.sortedBy { it.amount ?: Double.POSITIVE_INFINITY }
+        else -> list.sortedBy { it.date }
+    } }
     LazyColumn(modifier=Modifier.testTag("event-list"),contentPadding=PaddingValues(start=16.dp,end=16.dp,bottom=16.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
         if(tab=="Discover") item { RiverHero(onPick = if (filtered.isEmpty()) null else ({ onOpen(filtered.random().key) })) }
         item { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Text(when(tab){"Nearby"->"Good things, close by";"Saved"->"Saved for a good day";"Profile"->"Your next good stories";else->"Around the Red Stick"},style=MaterialTheme.typography.headlineSmall)
             Text(if(tab=="Profile") "Local guest · plans saved on this device" else catalogStatus,style=MaterialTheme.typography.labelMedium)
-            if(tab=="Nearby") Text("Known distances first. Check the event for venue information.",style=MaterialTheme.typography.bodySmall)
+            if(tab=="Nearby" && sort=="Distance") Text("Known distances first. Check the event for venue information.",style=MaterialTheme.typography.bodySmall)
         } }
         item { OutlinedTextField(value=query,onValueChange={query=it},label={Text("Search events, activities, places")},singleLine=true,modifier=Modifier.fillMaxWidth().testTag("event-search"),shape=RectangleShape,
             keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search),
@@ -53,7 +58,7 @@ fun EventDiscovery(events:List<Event>,catalogStatus:String,tab:String,saved:Set<
         item { Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
             FilterMenu(period,listOf("Any date","This week","Weekend"),Modifier.weight(1f)){period=it}
             FilterMenu(price,listOf("Any price","Free","Under $25"),Modifier.weight(1f)){price=it}
-            FilterMenu(sort,listOf("Soonest","Trending","Price"),Modifier.weight(1f)){sort=it}
+            FilterMenu(sort, if (tab == "Nearby") listOf("Distance","Soonest","Trending","Price") else listOf("Soonest","Trending","Price"),Modifier.weight(1f)){sort=it}
         } }
         if (tab == "Profile") item { PhotoCredits() }
         item { Text("${filtered.size} events",style=MaterialTheme.typography.labelSmall) }
@@ -98,5 +103,3 @@ fun EventCard(e:Event,saved:Boolean,joined:Boolean,nearby:Boolean,onOpen:()->Uni
         }
     }
 }
-
-

@@ -4,7 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -56,7 +56,7 @@ fun DiscoverBackdrop(modifier: Modifier = Modifier) {
 fun RiverHero(onPick: (() -> Unit)?) {
     val dark = MaterialTheme.colorScheme.background == Night.background
     val ink = MaterialTheme.colorScheme.onBackground
-    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
     var showPanacea by rememberSaveable { mutableStateOf(false) }
     val colors = if (dark) listOf(Color(0xF514233A), Color(0xBA192B43), Color(0x25331C45))
                  else listOf(Color(0xF7E7FFEB), Color(0xC4C0E9F3), Color(0x3894DDD6))
@@ -112,7 +112,7 @@ fun RiverHero(onPick: (() -> Unit)?) {
                 Text(stringResource(R.string.panacea_source_excerpt))
                 Text(stringResource(R.string.panacea_boredom_note))
                 TextButton(
-                    onClick = { uriHandler.openUri("https://www.theoi.com/Ouranios/AsklepiasPanakeia.html") },
+                    onClick = { context.openEventUrl("https://www.theoi.com/Ouranios/AsklepiasPanakeia.html") },
                     shape = RectangleShape, contentPadding = PaddingValues(horizontal = 0.dp)
                 ) { Text("Theoi Project ↗") }
             }

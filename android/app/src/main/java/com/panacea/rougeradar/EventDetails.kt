@@ -1,6 +1,5 @@
 package com.panacea.rougeradar
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.*
@@ -61,10 +60,6 @@ fun EventDetails(e:Event,saved:Boolean,joined:Boolean,onBack:()->Unit,onSave:()-
 private fun EventLink(label: String, url: String) {
     val context = LocalContext.current
     OutlinedButton(shape = androidx.compose.ui.graphics.RectangleShape, modifier = Modifier.fillMaxWidth(), onClick = {
-        try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-        } catch (_: ActivityNotFoundException) {
-            android.widget.Toast.makeText(context, "No browser available", android.widget.Toast.LENGTH_SHORT).show()
-        }
+        context.openEventUrl(url)
     }) { Text(label) }
 }

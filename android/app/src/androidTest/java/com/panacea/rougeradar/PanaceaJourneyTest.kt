@@ -38,6 +38,28 @@ class PanaceaJourneyTest {
         app.onNodeWithText("✓ Book discussion").performScrollTo().assertIsDisplayed()
     }
 
+    @Test fun returningFromDetailsPreservesSearch() {
+        app.onNodeWithTag("event-list").performScrollToNode(hasTestTag("event-search"))
+        app.onNodeWithTag("event-search").performTextInput("chapter")
+        app.onNodeWithTag("event-search").performImeAction()
+        app.onNodeWithTag("event-list").performScrollToNode(hasText("One more chapter"))
+        app.onNodeWithText("One more chapter").performClick()
+        app.onNodeWithText("← Back to events").performClick()
+        app.onNodeWithTag("event-list").performScrollToNode(hasTestTag("event-search"))
+        app.onNodeWithTag("event-search").assertTextContains("chapter")
+    }
+
+    @Test fun catalogParserAcceptsMissingCheckedDate() {
+        val json = org.json.JSONObject("""{
+            "id":"test", "title":"Test event", "category":"Music", "venue":"Venue",
+            "startLocal":"2026-11-06T19:30:00-06:00", "timezone":"America/Chicago",
+            "timeType":"performance", "sourceUrls":[]
+        }""")
+        val event = EventApiClient.parseEvent(json)
+        assertEquals("test", event.id)
+        assertNull(event.checkedDate)
+    }
+
     @Test fun savingSurvivesActivityRecreation() {
         openJazz()
         app.onNodeWithText("♡ Save for later").performScrollTo().performClick()

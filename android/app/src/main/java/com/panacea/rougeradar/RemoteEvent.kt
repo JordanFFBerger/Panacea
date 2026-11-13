@@ -17,5 +17,5 @@ data class RemoteEvent(
     val latitude: Double?,
     val longitude: Double?,
     val sourceUrls: List<String>,
-    val checkedDate: String??
+    val checkedDate: String?
 )
