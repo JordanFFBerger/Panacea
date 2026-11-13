@@ -123,7 +123,10 @@ fun AttendanceProfile(events: List<Event>, saved: Set<String>, onOpen: (String) 
                 style = MaterialTheme.typography.headlineSmall)
         }
         if (events.isEmpty()) item {
-            Text("Mark an event “I went!” to add it to your profile.", style = MaterialTheme.typography.bodyMedium)
+            Text("Mark an event “I went!” to add it to your profile.",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium)
         }
         items(events.sortedByDescending { it.listing?.startLocal }, key = { it.key }) { event ->
             EventCard(event, event.key in saved, false, false, { onOpen(event.key) }, { onSave(event.key) })
