@@ -1,15 +1,15 @@
 
 const http = require("node:http");
-const { loadEvents } = require("./eventRepository.cjs");
+const { createCommunityCatalog } = require("./communityCatalog.cjs");
 
 const PORT = Number(process.env.API_PORT || 3000);
-const HOST = "127.0.0.1";
+const HOST = process.env.API_HOST || "127.0.0.1";
 
 if (!Number.isInteger(PORT) || PORT < 0 || PORT > 65535) {
   throw new Error("Invalid API port");
 }
 
-const events = loadEvents();
+
 
 function sendJson(res, status, data) {
   res.writeHead(status, {
@@ -31,7 +31,7 @@ function validDate(date) {
   );
 }
 
-function filterEvents(params) {
+function filterEvents(events, params) {
   const category = (params.get("category") || "").trim().toLowerCase();
   const query = (params.get("q") || "").trim().toLowerCase();
   const date = params.get("date");
@@ -67,81 +67,93 @@ function filterEvents(params) {
   };
 }
 
-const server = http.createServer((req, res) => {
-  let url;
-
-  try {
-    url = new URL(req.url, "http://localhost");
-  } catch {
-    return sendJson(res, 400, {
-      error: "Invalid request URL"
-    });
-  }
-
-  if (req.method !== "GET") {
-    res.setHeader("Allow", "GET");
-    return sendJson(res, 405, {
-      error: "Method not allowed"
-    });
-  }
-
-  if (url.pathname === "/api/health") {
-    return sendJson(res, 200, {
-      status: "ok"
-    });
-  }
-
-  if (url.pathname === "/api/events") {
-    const result = filterEvents(url.searchParams);
-
-    if (result.error) {
-      return sendJson(res, 400, result);
-    }
-
-    return sendJson(res, 200, result);
-  }
-
-  if (url.pathname.startsWith("/api/events/")) {
-    const rawId = url.pathname.slice("/api/events/".length);
-    let id;
+function createServer({ getEvents = createCommunityCatalog() } = {}) {
+  const serve = async (req, res) => {
+    let url;
 
     try {
-      id = decodeURIComponent(rawId);
+      url = new URL(req.url, "http://localhost");
     } catch {
       return sendJson(res, 400, {
-        error: "Invalid event ID"
+        error: "Invalid request URL"
       });
     }
 
-    if (!id || id.includes("/")) {
-      return sendJson(res, 404, {
-        error: "Event not found"
+    if (req.method !== "GET") {
+      res.setHeader("Allow", "GET");
+      return sendJson(res, 405, {
+        error: "Method not allowed"
       });
     }
 
-    const event = events.find((item) => item.id === id);
-
-    if (!event) {
-      return sendJson(res, 404, {
-        error: "Event not found"
+    if (url.pathname === "/api/health") {
+      return sendJson(res, 200, {
+        status: "ok"
       });
     }
 
-    return sendJson(res, 200, { event });
-  }
+    if (url.pathname === "/api/events") {
+      const validation = filterEvents([], url.searchParams);
+      if (validation.error) return sendJson(res, 400, validation);
+      const result = filterEvents(await getEvents(), url.searchParams);
 
-  return sendJson(res, 404, {
-    error: "Endpoint not found"
-  });
-});
+      if (result.error) {
+        return sendJson(res, 400, result);
+      }
 
+      return sendJson(res, 200, result);
+    }
 
-if (require.main === module) {
-  server.listen(PORT, HOST, () => {
-    console.log(`Panacea API running at http://${HOST}:${server.address().port}`);
-    console.log(`Loaded ${events.length} events`);
+    if (url.pathname.startsWith("/api/events/")) {
+      const rawId = url.pathname.slice("/api/events/".length);
+      let id;
+
+      try {
+        id = decodeURIComponent(rawId);
+      } catch {
+        return sendJson(res, 400, {
+          error: "Invalid event ID"
+        });
+      }
+
+      if (!id || id.includes("/")) {
+        return sendJson(res, 404, {
+          error: "Event not found"
+        });
+      }
+
+      const event = (await getEvents()).find((item) => item.id === id);
+
+      if (!event) {
+        return sendJson(res, 404, {
+          error: "Event not found"
+        });
+      }
+
+      return sendJson(res, 200, { event });
+    }
+
+    return sendJson(res, 404, {
+      error: "Endpoint not found"
+    });
+  };
+
+  return http.createServer((req, res) => {
+    serve(req, res).catch(() => sendJson(res, 503, { error: "Live event catalog unavailable. Try again shortly." }));
   });
 }
 
-module.exports = { server };
+if (require.main === module) {
+  const getEvents = process.env.PANACEA_EVENT_FIXTURES === "1"
+    ? (() => {
+        const events = require("./eventRepository.cjs").loadEvents();
+        return async () => events;
+      })()
+    : undefined;
+  const server = createServer({ getEvents });
+  server.listen(PORT, HOST, () => {
+    console.log("Panacea API running at http://" + HOST + ":" + server.address().port);
+  });
+}
 
+module.exports = { createServer };

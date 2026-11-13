@@ -6,7 +6,7 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 
 export async function startApi({ port = 0 } = {}) {
   const child = spawn(process.execPath, ["backend/apiServer.cjs"], {
-    cwd: root, env: { ...process.env, API_PORT: String(port) }, stdio: ["ignore", "pipe", "pipe"],
+    cwd: root, env: { ...process.env, API_PORT: String(port), API_HOST: "127.0.0.1", PANACEA_EVENT_FIXTURES: "1" }, stdio: ["ignore", "pipe", "pipe"],
   });
   let output = "";
   let exited = false;

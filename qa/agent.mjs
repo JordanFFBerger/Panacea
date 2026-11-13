@@ -36,10 +36,10 @@ function gradleRun(...args) {
 const tasks = {
   syntax: async () => {
     const files = ["app/app.js", "app/data.js", "app/details.js", "app/trending.js",
-      "app/theme.js", "server.cjs", "backend/apiServer.cjs", "backend/eventRepository.cjs"];
+      "app/theme.js", "server.cjs", "backend/apiServer.cjs", "backend/eventRepository.cjs", "backend/liveCatalog.cjs", "backend/communityCatalog.cjs"];
     for (const file of files) await run(process.execPath, ["--check", file], root);
   },
-  integration: () => run(process.execPath, ["--test", "backend/backend.test.cjs"], root),
+  integration: () => run(process.execPath, ["--test", "backend/backend.test.cjs", "backend/communityCatalog.test.cjs"], root),
   "api-e2e": () => run(process.execPath, ["--test", "qa/api.e2e.test.mjs"], root),
   "android-unit": () => gradleRun(":app:testDebugUnitTest", ":app:assembleDebug"),
   "android-e2e": async () => {

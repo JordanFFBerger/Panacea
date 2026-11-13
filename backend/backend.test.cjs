@@ -6,8 +6,10 @@ const os = require("node:os");
 const path = require("node:path");
 
 const { loadEvents } = require("./eventRepository.cjs");
-const { server } = require("./apiServer.cjs");
+const { createServer } = require("./apiServer.cjs");
 
+const events = loadEvents();
+const server = createServer({ getEvents: async () => events });
 let baseUrl;
 
 // Start a separate test server on a free port.
